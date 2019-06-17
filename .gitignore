@@ -2,6 +2,7 @@
 
 /target
 /test
+/resources
 
 # Compiled class file
 *.class
