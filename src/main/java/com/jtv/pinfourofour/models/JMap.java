@@ -1,6 +1,14 @@
 package com.jtv.pinfourofour.models;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 
 /** <b>JMap</b>
@@ -96,15 +104,50 @@ public class JMap {
         return size;
     }
 
-    /**
-     *
+    /**<b>csvImport</b>
+     * Imports contents from a CSV file. Parses records into JPins and adds each to JMap.
+     * TODO: check for number of columns, reject CSV if format is incorrect.
      */
     public void csvImport(){
-
+        try (Reader reader = new FileReader ("input.csv")){
+            CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader ("id", "link", "creator","board", "note","status","redir"));
+            for (CSVRecord record : parser){
+                String pinID = record.get("id");
+                String link = record.get("link");
+                String creator = record.get ("creator");
+                String board = record.get ("board");
+                String note = record.get("note");
+                String status = record.get("status");
+                String redir = record.get ("redir");
+                JPin pin = new JPin(pinID, link, creator, board, note, Integer.parseInt (status), redir);
+                JPins.put (pin.getPinID (), pin);
+            }
+        }catch (Exception e){
+            e.printStackTrace ();
+        }
     }
 
+    /**<b>csvExport</b>
+     * Exports the JPins from this JMap to a CSV file. Parses JPins into records and and writes to a CSV file in the <i>Reports</i> directory.
+     *
+     */
     public void csvExport(){
-
+        File dir = new File ("reports");
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        String date = formatter.format(LocalDateTime.now());
+        String outfile = "Output_test" +date+ ".csv";
+        dir.mkdir ();
+        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader ("id", "board", "link", "note", "status", "redir"))){
+            JPins.forEach ((k, v) -> {
+                try {
+                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getNote(), v.getStatus(), v.getRedir());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
