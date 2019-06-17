@@ -60,7 +60,7 @@ public class Config {
         }
     }
 
-    private void load(){
+    public void load(){
         try  {
             BufferedReader br = new BufferedReader(new FileReader(configFile));
             configFileProps.load(br);

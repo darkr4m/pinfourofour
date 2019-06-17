@@ -1,5 +1,6 @@
 package com.jtv.pinfourofour.models;
 
+import com.jtv.pinfourofour.utils.Network;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -109,8 +110,8 @@ public class JMap {
      * TODO: check for number of columns, reject CSV if format is incorrect.
      */
     public void csvImport(){
-        try (Reader reader = new FileReader ("input.csv")){
-            CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader ("id", "link", "creator","board", "note","status","redir"));
+        try (Reader reader = new FileReader ("pins.csv")){
+            CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader ("id", "board", "link", "creator", "note","status","redir"));
             for (CSVRecord record : parser){
                 String pinID = record.get("id");
                 String link = record.get("link");
@@ -119,7 +120,7 @@ public class JMap {
                 String note = record.get("note");
                 String status = record.get("status");
                 String redir = record.get ("redir");
-                JPin pin = new JPin(pinID, link, creator, board, note, Integer.parseInt (status), redir);
+                JPin pin = new JPin(pinID, link, creator, board, note, status, redir);
                 JPins.put (pin.getPinID (), pin);
             }
         }catch (Exception e){
@@ -148,6 +149,15 @@ public class JMap {
         } catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void checkLinks(){
+        Network network = new Network ();
+        JPins.forEach ((k,v) -> {
+            v.setStatus (String.valueOf (network.checkStatus (v.getLink ())));
+            v.setRedir (network.getLocation ());
+
+        });
     }
 
 }
