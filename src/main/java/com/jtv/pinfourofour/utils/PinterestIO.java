@@ -9,6 +9,8 @@ import com.jtv.pinfourofour.responses.pin.Pin;
 import com.jtv.pinfourofour.responses.pin.Pins;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,14 +43,10 @@ public class PinterestIO {
     }
 
     public void getPins(){
-        Properties save = new Properties ();
-        String cursor;
-
         Pins pins = pinterest.getMyPins(new PinFields ().withAll ());
         cursor = pins.getNextPage ().getCursor ();
-        if(cursor != null){
-
-        }
+        savePosition (cursor, "getPins.txt");
+        System.out.println (cursor);
     }
 
     /**
@@ -155,9 +153,18 @@ public class PinterestIO {
     /**
      * TODO: save cursor and next to file.
      */
-    public void savePosition() {
-
+    public void savePosition(String cursor, String fileName) {
+        File saveDir = new File ("saves");
+        File saveFile = new File(fileName);
+        Properties save = new Properties ();
+        try{
+            save.setProperty ("cursor", cursor);
+            save.store (new FileOutputStream (saveFile.getAbsolutePath()), null);
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
     }
+
 
 
 }
