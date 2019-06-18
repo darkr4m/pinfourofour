@@ -41,7 +41,8 @@ public class Network {
                 System.out.println (status);
             } else {
                 conn = (HttpURLConnection) url.openConnection ();
-                conn.setConnectTimeout (3000);
+                conn.setConnectTimeout (4000);
+                conn.setReadTimeout (4000);
                 conn.connect ();
             }
 
@@ -68,7 +69,8 @@ public class Network {
                 } else {
                     url = new URL (location );
                     conn = (HttpURLConnection) url.openConnection ();
-                    conn.setConnectTimeout (3000);
+                    conn.setConnectTimeout (4000);
+                    conn.setReadTimeout (4000);
                     conn.connect ();
                 }
                 redir_status = conn.getResponseCode ();
