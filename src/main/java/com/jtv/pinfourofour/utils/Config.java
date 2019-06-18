@@ -49,7 +49,7 @@ public class Config {
                 configDir.mkdir();
                 configFile.createNewFile();
                 //TODO: Create default values object.
-                configFileProps.setProperty("test", "value");
+                proxySetup ();
                 configFileProps.store(new FileOutputStream(configFile.getAbsolutePath()), null);
                 configured = true;
                 System.out.println("New configuration file created.");
@@ -68,5 +68,12 @@ public class Config {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //TODO: add varargs
+    private void proxySetup(){
+        configFileProps.setProperty("proxy", "");
+        configFileProps.setProperty("http_proxy_addr", "");
+        configFileProps.setProperty("port", "");
     }
 }
