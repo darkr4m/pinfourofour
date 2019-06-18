@@ -111,7 +111,7 @@ public class JMap {
      */
     public void csvImport(){
         try (Reader reader = new FileReader ("pins.csv")){
-            CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader ("id", "board", "link", "creator", "note","status","redir"));
+            CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader ("id", "board", "link", "creator", "note","status","redir", "redir_status").withAllowMissingColumnNames(true));
             for (CSVRecord record : parser){
                 String pinID = record.get("id");
                 String link = record.get("link");
@@ -120,7 +120,8 @@ public class JMap {
                 String note = record.get("note");
                 String status = record.get("status");
                 String redir = record.get ("redir");
-                JPin pin = new JPin(pinID, link, creator, board, note, status, redir);
+                String redir_status = record.get ("redir_status");
+                JPin pin = new JPin(pinID, link, creator, board, note, status, redir, redir_status);
                 JPins.put (pin.getPinID (), pin);
             }
         }catch (Exception e){
@@ -134,14 +135,15 @@ public class JMap {
      */
     public void csvExport(){
         File dir = new File ("reports");
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("MM_dd_hh-mm");
         String date = formatter.format(LocalDateTime.now());
-        String outfile = "Output_test" +date+ ".csv";
+        String outfile = "Output" +date+ ".csv";
         dir.mkdir ();
-        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader ("id", "board", "link", "note", "status", "redir"))){
+        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader ("id", "board", "link", "note", "status", "redir", "redir_status"))){
             JPins.forEach ((k, v) -> {
                 try {
-                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getNote(), v.getStatus(), v.getRedir());
+                    String pinterestURL = "https://www.pinterest.com/pin/";
+                    printer.printRecord(pinterestURL+v.getPinID(), v.getBoard(), v.getLink(), v.getNote(), v.getStatus(), v.getRedir(), v.getRedir_status ());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -13,6 +13,7 @@ public class Network {
     private int port;
     private String location = null;
     int status = 0;
+    int redir_status= 0;
 
     public Network(){
         System.out.println ("Network initialized.");
@@ -70,16 +71,20 @@ public class Network {
                     conn.setConnectTimeout (3000);
                     conn.connect ();
                 }
-                status = conn.getResponseCode ();
+                redir_status = conn.getResponseCode ();
             }
         } catch (Exception e) {
             e.printStackTrace ();
         }
-        System.out.println ("Done..." + link + " resulted in status code: " + status + "\n ---------");
+        System.out.println ("Done..." + link + " resulted in status code: " + redir_status + "\n ---------");
         return status;
     }
 
     public String getLocation() {
         return location;
+    }
+
+    public int getRedir_status() {
+        return redir_status;
     }
 }

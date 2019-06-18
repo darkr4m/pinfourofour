@@ -8,6 +8,7 @@ public class JPin {
     private String note; // note
     private String status; // for use when JPin link is being checked with HttpUrlConnection
     private String redir; // location header if link status results in a redirect
+    private String redir_status; //status of the redirected link
 
     /** <b>JPin Constructor</b>
      * Values from Pinterest that are relevant to the functions of this application.
@@ -20,7 +21,7 @@ public class JPin {
      *
      */
     public JPin(String pinID, String link, String creator, String board, String note) {
-        this(pinID,link,creator,board,note,"","");
+        this(pinID,link,creator,board,note,"","","");
     }
 
     /**<b>JPin Constructor</b>
@@ -34,8 +35,9 @@ public class JPin {
      * @param note - String, the description or note of the pin
      * @param status - String, the status code HttpUrlConnection returns from the original link
      * @param redir - String, location header if link status results in a redirect
+     * @param redir_status - String, status of the redirected link
      */
-    public JPin(String pinID, String link, String creator, String board, String note, String status, String redir) {
+    public JPin(String pinID, String link, String creator, String board, String note, String status, String redir, String redir_status) {
         this.pinID = pinID;
         this.link = link;
         this.creator = creator;
@@ -43,6 +45,7 @@ public class JPin {
         this.note = note;
         this.status = status;
         this.redir = redir;
+        this.redir_status = redir_status;
     }
 
     //Getters and setters
@@ -65,5 +68,7 @@ public class JPin {
     public String getRedir() { return redir; }
     public void setRedir(String redir) { this.redir = redir; }
 
+    public String getRedir_status() { return redir_status; }
 
+    public void setRedir_status(String redir_status) { this.redir_status = redir_status; }
 }
