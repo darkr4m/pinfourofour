@@ -9,7 +9,7 @@ import java.util.regex.Pattern
 import org.apache.commons.lang3.StringUtils.isNotBlank
 
 object PinEndPointURIBuilder {
-    private const val BASE_URL = "https://api.pinfourofour.com"
+    private const val BASE_URL = "https://api.pinterest.com/v1/"
     private const val BOARD_PIN_PATH = "/v1/boards/{BOARD_NAME}/pins/"
     private const val BASE_PIN_PATH = "/v1/pins/"
     private const val PIN_PATH = BASE_PIN_PATH + "{PIN_ID}/"
