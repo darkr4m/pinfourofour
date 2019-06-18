@@ -36,11 +36,13 @@ public class Network {
             if(proxy){
                 url = new URL ("http", http_proxy_addr, port, "http://www.jtv.com" );
                 conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod ("HEAD");
                 conn.connect();
                 status = conn.getResponseCode ();
                 System.out.println (status);
             } else {
                 conn = (HttpURLConnection) url.openConnection ();
+                conn.setRequestMethod ("HEAD");
                 conn.setConnectTimeout (4000);
                 conn.setReadTimeout (4000);
                 conn.connect ();
@@ -63,12 +65,14 @@ public class Network {
                 if(proxy){
                     url = new URL ("http", "proxy.corp.jewelry.acn", 80, location );
                     conn = (HttpURLConnection)url.openConnection();
+                    conn.setRequestMethod ("HEAD");
                     conn.connect();
                     status = conn.getResponseCode ();
                     System.out.println (status);
                 } else {
                     url = new URL (location );
                     conn = (HttpURLConnection) url.openConnection ();
+                    conn.setRequestMethod ("HEAD");
                     conn.setConnectTimeout (4000);
                     conn.setReadTimeout (4000);
                     conn.connect ();
