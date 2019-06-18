@@ -23,23 +23,32 @@ import java.util.Properties;
 public class PinterestIO {
     private static Pinterest pinterest;
     private String cursor;
-    private int requestsRemaining;
-
 
     public PinterestIO(){
         Properties props = new Properties ();
         try {
             props.load (new BufferedReader (new FileReader ("config/pin.config")));
-            pinterest = new Pinterest (props.getProperty ("access_token"));
-            System.out.println ("New Pinterest IO opened with access token "+props.getProperty ("access_token"));
+            if(!props.getProperty ("access_token").isEmpty ()) {
+                pinterest = new Pinterest (props.getProperty ("access_token"));
+                System.out.println ("New Pinterest IO opened with access token "+props.getProperty ("access_token"));
+            } else {
+                System.out.println ("Access token not found.");
+            }
         } catch (Exception e) {
             e.printStackTrace ();
+            System.out.println ("Access token not found.");
         }
     }
 
     public void getPins(){
-        Pins pins = pinterest.getMyPins(new PinFields ().withAll ());
+        Properties save = new Properties ();
+        String cursor;
 
+        Pins pins = pinterest.getMyPins(new PinFields ().withAll ());
+        cursor = pins.getNextPage ().getCursor ();
+        if(cursor != null){
+
+        }
     }
 
     /**
@@ -90,9 +99,37 @@ public class PinterestIO {
         return pinsPage;
     }
 
-    public String updatePin(String pinID, String board, String note, String link){
-        ResponseMessageAndStatusCode response = pinterest.patchPin (pinID, board, note, link);
-        return response.toString ();
+    public void updatePin(String pinID, String board, String note, String link){
+        if(pinterest != null) {
+            try {
+                ResponseMessageAndStatusCode response = pinterest.patchPin (pinID, board, note, link);
+                if (response.getStatusCode () == 200) {
+                    System.out.println ("Pin " + pinID + " updated successfully.");
+
+                } else {
+                    System.out.println ("Pin " + pinID + " not updated.");
+                }
+            } catch (PinterestException e) {
+                System.out.println ("Unable to update pin. Rate limited by Pinterest.");
+                e.getMessage ();
+            }
+        }
+    }
+
+    public void deletePin(String pinID){
+        if (pinterest !=null) {
+            try {
+                boolean deleted = pinterest.deletePin (pinID);
+                if (deleted) {
+                    System.out.println ("Pin " + pinID + " deleted sucessfully.");
+                } else {
+                    System.out.println ("Pin " + pinID + " not deleted.");
+                }
+            } catch (PinterestException e) {
+                System.out.println ("Unable to delete pin. Rate limited by Pinterest.");
+                e.getMessage ();
+            }
+        }
     }
 
 
