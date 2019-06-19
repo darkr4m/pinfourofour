@@ -50,6 +50,7 @@ public class Config {
                 configFile.createNewFile();
                 //TODO: Create default values object.
                 proxySetup ();
+                pinterestSetup ();
                 configFileProps.store(new FileOutputStream(configFile.getAbsolutePath()), null);
                 configured = true;
                 System.out.println("New configuration file created.");
@@ -63,11 +64,14 @@ public class Config {
     public void load(){
         try  {
             BufferedReader br = new BufferedReader(new FileReader(configFile));
-            configFileProps.load(br);
             System.out.println("Configuration loaded successfully.");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void pinterestSetup(){
+        configFileProps.setProperty ("access_token", "");
     }
 
     //TODO: add varargs
