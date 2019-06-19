@@ -56,7 +56,10 @@ object PinEndPointURIBuilder {
             uriBuilder.setParameter("limit", "10")
         }
 
-        if(cursor.isNotEmpty()) uriBuilder.setParameter("cursor", cursor)
+        if(cursor.isNotEmpty()) {
+            uriBuilder.setParameter("cursor", cursor)
+            println("Set cursor to: " + cursor)
+            }
 
         return uriBuilder.build()
     }

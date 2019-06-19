@@ -64,10 +64,12 @@ public class PinterestIO {
                 System.out.println ("Pins requested: " + pinsPage + "\n"+ next);
                 pinsPage.add (pins);
             }
+            System.out.println (pinsPage);
         } catch (PinterestException e) {
             e.printStackTrace ();
             System.out.println ("Message");
         }
+        System.out.println ("outer message");
     }
 
     /**
@@ -191,13 +193,13 @@ public class PinterestIO {
                 save.load (br);
                 //Get next url from save.properties
                 String n = save.getProperty (method);
-                System.out.println (n);
+//                System.out.println (n);
                 //decode url
                 String d = URLDecoder.decode (n,"UTF-8");
-                System.out.println (d);
+//                System.out.println (d);
                 //get cursor
                 String c = d.substring (d.indexOf ("cursor=")+"cursor=".length ());
-                System.out.println (c);
+//                System.out.println (c);
                 cursor = c;
             } catch (Exception e) {
                 e.printStackTrace ();
