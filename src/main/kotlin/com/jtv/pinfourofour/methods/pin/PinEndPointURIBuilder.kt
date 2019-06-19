@@ -1,5 +1,6 @@
 package com.jtv.pinfourofour.methods.pin
 
+import com.jtv.pinfourofour.utils.PinterestIO
 import org.apache.http.client.utils.URIBuilder
 
 import java.net.URI
@@ -7,6 +8,12 @@ import java.net.URISyntaxException
 import java.util.regex.Pattern
 
 import org.apache.commons.lang3.StringUtils.isNotBlank
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.lang.Exception
+import java.net.URLDecoder
+import java.util.*
 
 object PinEndPointURIBuilder {
     private const val BASE_URL = "https://api.pinterest.com/v1/"
@@ -16,6 +23,7 @@ object PinEndPointURIBuilder {
     private const val MY_PIN_PATH = "/v1/me/pins/"
     private val PIN_PATTERN = Pattern.compile("\\{PIN_ID\\}")
     private val BOARD_NAME_PATTERN = Pattern.compile("\\{BOARD_NAME\\}")
+    private var cursor = ""
 
     @JvmStatic
     @Throws(URISyntaxException::class)
@@ -31,9 +39,8 @@ object PinEndPointURIBuilder {
 
         if (isNotBlank(fields)) {
             uriBuilder.setParameter("fields", fields)
-            uriBuilder.setParameter("limit", "100")
+            uriBuilder.setParameter("limit", "10")
         }
-
 
 
         return uriBuilder.build()
@@ -46,8 +53,10 @@ object PinEndPointURIBuilder {
 
         if (isNotBlank(fields)) {
             uriBuilder.setParameter("fields", fields)
-            uriBuilder.setParameter("limit", "100")
+            uriBuilder.setParameter("limit", "10")
         }
+
+        if(cursor.isNotEmpty()) uriBuilder.setParameter("cursor", cursor)
 
         return uriBuilder.build()
     }
@@ -65,5 +74,10 @@ object PinEndPointURIBuilder {
         }
 
         return uriBuilder.build()
+    }
+
+    @JvmStatic
+    fun setCursor(c:String): Unit {
+        cursor = c
     }
 }

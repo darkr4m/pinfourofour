@@ -4,6 +4,7 @@ import com.jtv.pinfourofour.Pinterest;
 import com.jtv.pinfourofour.exceptions.PinterestException;
 import com.jtv.pinfourofour.fields.pin.PinFields;
 import com.jtv.pinfourofour.methods.network.ResponseMessageAndStatusCode;
+import com.jtv.pinfourofour.methods.pin.PinEndPointURIBuilder;
 import com.jtv.pinfourofour.models.JPin;
 import com.jtv.pinfourofour.responses.pin.Pin;
 import com.jtv.pinfourofour.responses.pin.Pins;
@@ -12,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -24,7 +26,8 @@ import java.util.Properties;
  */
 public class PinterestIO {
     private static Pinterest pinterest;
-    private String cursor;
+    private Properties save = new Properties ();
+    private String next;
 
     public PinterestIO(){
         Properties props = new Properties ();
@@ -42,11 +45,29 @@ public class PinterestIO {
         }
     }
 
-    public void getPins(){
-        Pins pins = pinterest.getMyPins(new PinFields ().withAll ());
-        cursor = pins.getNextPage ().getCursor ();
-        savePosition (cursor, "getPins.txt");
-        System.out.println (cursor);
+    public void getPins(Boolean cont){
+        ArrayList<Pins> pinsPage = new ArrayList<> ();
+        final String fileName = "save.properties";
+        try {
+            if (cont) {
+                PinEndPointURIBuilder.setCursor (getContinueCursor ("myPins"));
+            }
+
+            Pins pins = pinterest.getMyPins (new PinFields ().withAll ());
+            pinsPage.add (pins);
+            if(next != null) savePosition ("myPins", next, fileName);
+
+            while (pinterest.getNextPageOfPins (pins.getNextPage ()) != null) {
+                pins = pinterest.getNextPageOfPins (pins.getNextPage ());
+                next = pins.getNextPage ().getNext ();
+                if (next != null) savePosition ("myPins", next, fileName);
+                System.out.println ("Pins requested: " + pinsPage + "\n"+ next);
+                pinsPage.add (pins);
+            }
+        } catch (PinterestException e) {
+            e.printStackTrace ();
+            System.out.println ("Message");
+        }
     }
 
     /**
@@ -60,7 +81,7 @@ public class PinterestIO {
         try {
             Pins pins = pinterest.getMyPins (new PinFields ().withAll ());
             pinsPage.add (pins);
-            pins.getNextPage ().getCursor ();
+
             while (pinterest.getNextPageOfPins (pins.getNextPage ()) != null) {
                 pins = pinterest.getNextPageOfPins (pins.getNextPage ());
                 pinsPage.add (pins);
@@ -78,13 +99,13 @@ public class PinterestIO {
         ArrayList<Pins> pinsPage = new ArrayList<> ();
         try {
             Pins pins = pinterest.getPinsFromBoard (board, new PinFields ().withAll ());
-            cursor = pins.getNextPage ().getCursor ();
-            System.out.println ("Pins requested: " + pins + "\n cursor:" + cursor);
+            next = pins.getNextPage ().getCursor ();
+            System.out.println ("Pins requested: " + pins + "\n next:" + next);
             pinsPage.add (pins);
             while (pinterest.getNextPageOfPins (pins.getNextPage ()) != null) {
                 pins = pinterest.getNextPageOfPins (pins.getNextPage ());
-                cursor = pins.getNextPage ().getCursor ();
-                System.out.println ("Pins requested: " + "pin cursor " + cursor);
+                next = pins.getNextPage ().getCursor ();
+                System.out.println ("Pins requested: " + "pin next " + next);
                 pinsPage.add (pins);
             }
         } catch (PinterestException e) {
@@ -148,21 +169,41 @@ public class PinterestIO {
         return jPins;
     }
 
-
-
-    /**
-     * TODO: save cursor and next to file.
-     */
-    public void savePosition(String cursor, String fileName) {
-        File saveDir = new File ("saves");
-        File saveFile = new File(fileName);
-        Properties save = new Properties ();
+    public void savePosition(String method, String next, String fileName) {
         try{
-            save.setProperty ("cursor", cursor);
+            File saveDir = new File ("saves");
+            saveDir.mkdir ();
+            File saveFile = new File(saveDir,fileName);
+            if(!saveFile.exists ()) saveFile.createNewFile (); //Creates save file if it does not exist.
+            save.setProperty (method, next);
             save.store (new FileOutputStream (saveFile.getAbsolutePath()), null);
         } catch (Exception e) {
             e.printStackTrace ();
         }
+    }
+
+    public String getContinueCursor(String method){
+        String cursor="";
+        File saveFile = new File("saves", "save.properties");
+        if(saveFile.exists ()){
+            try {
+                BufferedReader br = new BufferedReader (new FileReader (saveFile));
+                save.load (br);
+                //Get next url from save.properties
+                String n = save.getProperty (method);
+                System.out.println (n);
+                //decode url
+                String d = URLDecoder.decode (n,"UTF-8");
+                System.out.println (d);
+                //get cursor
+                String c = d.substring (d.indexOf ("cursor=")+"cursor=".length ());
+                System.out.println (c);
+                cursor = c;
+            } catch (Exception e) {
+                e.printStackTrace ();
+            }
+        }
+        return cursor;
     }
 
 
