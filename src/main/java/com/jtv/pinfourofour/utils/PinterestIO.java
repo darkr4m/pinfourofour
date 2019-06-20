@@ -157,7 +157,7 @@ public class PinterestIO {
     /**
      *
      * @param pinsPage
-     * @return - Map of jPins (Pin ID, JPin)
+     * @return - JMap of jPins (Pin ID, JPin)
      */
 
     public HashMap<String, JPin> toJPin(ArrayList<Pins> pinsPage) {

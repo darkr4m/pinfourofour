@@ -63,7 +63,7 @@ public class Network {
 
             if (redirect) {
                 if(proxy){
-                    url = new URL ("http", "proxy.corp.jewelry.acn", 80, location );
+                    url = new URL ( location );
                     conn = (HttpURLConnection)url.openConnection();
                     conn.setRequestMethod ("HEAD");
                     conn.connect();

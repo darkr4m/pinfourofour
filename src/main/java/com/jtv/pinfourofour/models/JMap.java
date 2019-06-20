@@ -109,8 +109,8 @@ public class JMap {
      * Imports contents from a CSV file. Parses records into JPins and adds each to JMap.
      * TODO: check for number of columns, reject CSV if format is incorrect.
      */
-    public void csvImport(){
-        try (Reader reader = new FileReader ("pins.csv")){
+    public void csvImport(String fileName){
+        try (Reader reader = new FileReader (fileName)){
             CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader ("id", "board", "link", "creator", "note","status","redir", "redir_status").withAllowMissingColumnNames(true));
             for (CSVRecord record : parser){
                 String pinID = record.get("id");
@@ -133,17 +133,17 @@ public class JMap {
      * Exports the JPins from this JMap to a CSV file. Parses JPins into records and and writes to a CSV file in the <i>Reports</i> directory.
      *
      */
-    public void csvExport(){
-        File dir = new File ("reports");
+    public void csvExport(String dirName, String fileName){
+        File dir = new File (dirName);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("MM_dd_hh-mm");
         String date = formatter.format(LocalDateTime.now());
-        String outfile = "Output" +date+ ".csv";
+        String outfile = fileName+".csv";
         dir.mkdir ();
-        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader ("id", "board", "link", "note", "status", "redir", "redir_status"))){
+        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader ("id", "board", "link", "creator", "note", "status", "redir", "redir_status","pinterest_url"))){
             JPins.forEach ((k, v) -> {
                 try {
-                    String pinterestURL = "https://www.pinterest.com/pin/";
-                    printer.printRecord(pinterestURL+v.getPinID(), v.getBoard(), v.getLink(), v.getNote(), v.getStatus(), v.getRedir(), v.getRedir_status ());
+                    String pinterestURL = "https://www.pinterest.com/pin/"+v.getPinID ();
+                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getCreator (), v.getNote(), v.getStatus(), v.getRedir(), v.getRedir_status (), pinterestURL);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -153,12 +153,16 @@ public class JMap {
         }
     }
 
+    public void pinterestImport(Boolean cont){
+
+    }
+
     public void checkLinks(){
         Network network = new Network ();
         JPins.forEach ((k,v) -> {
             v.setStatus (String.valueOf (network.checkStatus (v.getLink ())));
             v.setRedir (network.getLocation ());
-
+            v.setRedir_status (String.valueOf (network.getRedir_status ()));
         });
     }
 
