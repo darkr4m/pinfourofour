@@ -5,6 +5,7 @@ import com.jtv.pinfourofour.exceptions.PinterestException;
 import com.jtv.pinfourofour.fields.pin.PinFields;
 import com.jtv.pinfourofour.methods.network.ResponseMessageAndStatusCode;
 import com.jtv.pinfourofour.methods.pin.PinEndPointURIBuilder;
+import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.JPin;
 import com.jtv.pinfourofour.responses.pin.Pin;
 import com.jtv.pinfourofour.responses.pin.Pins;
@@ -15,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
 
 
@@ -45,12 +45,12 @@ public class PinterestIO {
         }
     }
 
-    public void getPins(Boolean cont){
+    public JMap getPins(Boolean cont){
         ArrayList<Pins> pinsPage = new ArrayList<> ();
         final String fileName = "save.properties";
         try {
             if (cont) {
-                PinEndPointURIBuilder.setCursor (getContinueCursor ("myPins"));
+                if(!getContinueCursor ("myPins").isEmpty ()) PinEndPointURIBuilder.setCursor (getContinueCursor ("myPins"));
             }
 
             Pins pins = pinterest.getMyPins (new PinFields ().withAll ());
@@ -67,9 +67,10 @@ public class PinterestIO {
             System.out.println (pinsPage);
         } catch (PinterestException e) {
             e.printStackTrace ();
-            System.out.println ("Message");
+            System.out.println ("You are rate limited by Pinterest. Please try again later.");
         }
-        System.out.println ("outer message");
+
+        return toJMap (pinsPage);
     }
 
     /**
@@ -117,6 +118,7 @@ public class PinterestIO {
         } catch (Exception e) {
             e.printStackTrace ();
         }
+
         return pinsPage;
     }
 
@@ -160,15 +162,16 @@ public class PinterestIO {
      * @return - JMap of jPins (Pin ID, JPin)
      */
 
-    public HashMap<String, JPin> toJPin(ArrayList<Pins> pinsPage) {
-        HashMap<String, JPin> jPins = new HashMap<> ();
+    public JMap toJMap(ArrayList<Pins> pinsPage) {
+        JMap jMap = new JMap ();
         for (Pins pinItems: pinsPage) {
             for (Pin pin: pinItems) {
                 JPin jPin = new JPin (pin.getId (), pin.getOriginal_link (), pin.getCreator ().getFirstName (), pin.getBoard ().getName (), pin.getNote ());
-                jPins.put(jPin.getPinID (), jPin);
+                jMap.add (jPin);
             }
         }
-        return jPins;
+        jMap.count ();
+        return jMap;
     }
 
     public void savePosition(String method, String next, String fileName) {
