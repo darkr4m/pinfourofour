@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 
+import static com.jtv.pinfourofour.models.CSVHeaders.*;
+
 /** <b>JMap</b>
  * This class is designed to be a holder for <b>JPins</b>.
  * @see JPin
@@ -107,20 +109,20 @@ public class JMap {
 
     /**<b>csvImport</b>
      * Imports contents from a CSV file. Parses records into JPins and adds each to JMap.
-     * TODO: check for number of columns, reject CSV if format is incorrect.
+     *
      */
     public void csvImport(String fileName){
         try (Reader reader = new FileReader (fileName)){
-            CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader ("id", "board", "link", "creator", "note","status","redir", "redir_status").withAllowMissingColumnNames(true));
+            CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader (CSVHeaders.class).withAllowMissingColumnNames(true));
             for (CSVRecord record : parser){
-                String pinID = record.get("id");
-                String link = record.get("link");
-                String creator = record.get ("creator");
-                String board = record.get ("board");
-                String note = record.get("note");
-                String status = record.get("status");
-                String redir = record.get ("redir");
-                String redir_status = record.get ("redir_status");
+                String pinID = record.get(PIN_ID);
+                String board = record.get (BOARD);
+                String link = record.get(LINK);
+                String creator = record.get (CREATOR);
+                String note = record.get(NOTE);
+                String status = record.get(STATUS);
+                String redir = record.get (REDIR_LINK);
+                String redir_status = record.get (REDIR_STATUS);
                 JPin pin = new JPin(pinID, link, creator, board, note, status, redir, redir_status);
                 JPins.put (pin.getPinID (), pin);
             }
@@ -139,7 +141,7 @@ public class JMap {
         String date = formatter.format(LocalDateTime.now());
         String outfile = fileName+".csv";
         dir.mkdir ();
-        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader ("id", "board", "link", "creator", "note", "status", "redir", "redir_status","pinterest_url"))){
+        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader (CSVHeaders.class))){
             JPins.forEach ((k, v) -> {
                 try {
                     String pinterestURL = "https://www.pinterest.com/pin/"+v.getPinID ();
