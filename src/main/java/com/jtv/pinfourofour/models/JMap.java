@@ -20,9 +20,8 @@ import static com.jtv.pinfourofour.models.CSVHeaders.*;
 
 /** <b>JMap</b>
  * This class is designed to be a holder for <b>JPins</b>.
- * @see JPin
  *
- * TODO: Provide functionality for importing and exporting to CSV files.
+ * @see JPin
  */
 public class JMap {
     /**
@@ -119,7 +118,6 @@ public class JMap {
         try (Reader reader = new FileReader (fileName)){
             CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader (CSVHeaders.class).withAllowMissingColumnNames(true));
             for (CSVRecord record : parser){
-                String action = record.get (ACTION);
                 String pinID = record.get(PIN_ID);
                 String board = record.get (BOARD);
                 String link = record.get(LINK);
@@ -128,6 +126,7 @@ public class JMap {
                 String status = record.get(STATUS);
                 String redir = record.get (REDIR_LINK);
                 String redir_status = record.get (REDIR_STATUS);
+                String action = record.get (ACTION);
                 JPin pin = new JPin(pinID, link, creator, board, note, status, redir, redir_status,action);
                 JPins.put (pin.getPinID (), pin);
             }
@@ -144,13 +143,12 @@ public class JMap {
         File dir = new File (dirName);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("MM_dd_hh-mm");
         String date = formatter.format(LocalDateTime.now());
-        String outfile = fileName+".csv";
+        String outfile = date+fileName+".csv";
         dir.mkdir ();
         try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader (CSVHeaders.class))){
             JPins.forEach ((k, v) -> {
                 try {
-                    String pinterestURL = "https://www.pinterest.com/pin/"+v.getPinID ();
-                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getCreator (), v.getNote(), v.getStatus(), v.getRedir(), v.getRedir_status (), pinterestURL);
+                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getCreator (), v.getNote(), v.getStatus(), v.getRedir(), v.getRedir_status (), v.getAction ());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -185,8 +183,7 @@ public class JMap {
                 if (!matcher.matches ()) {
                         ext.add (v.getPinID ());
                         try {
-                            String pinterestURL = "https://www.pinterest.com/pin/" + v.getPinID ();
-                            printer.printRecord (v.getPinID (), v.getBoard (), v.getLink (), v.getCreator (), v.getNote (), v.getStatus (), v.getRedir (), v.getRedir_status (), pinterestURL);
+                            printer.printRecord (v.getPinID (), v.getBoard (), v.getLink (), v.getCreator (), v.getNote (), v.getStatus (), v.getRedir (), v.getRedir_status (), v.getAction ());
                         } catch (IOException e){
                             e.printStackTrace ();
                         }
