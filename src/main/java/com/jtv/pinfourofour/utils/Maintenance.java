@@ -33,8 +33,8 @@ public class Maintenance {
                 if(file.isFile ()){
                     String fileName = file.getName ();
                     jMap.csvImport (dir+File.separator+fileName);
-                    if(!file.getName ().equals (master+".csv"));
-                    file.delete ();
+                    //TODO: replace with regex
+                    if(!file.getName ().equals (master+".csv")) file.delete ();
                 }
                 else {
                     System.out.println (file.getName ()+" is not a file.");
