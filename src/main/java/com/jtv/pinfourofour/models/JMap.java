@@ -128,7 +128,7 @@ public class JMap {
                 String status = record.get(STATUS);
                 String redir = record.get (REDIR_LINK);
                 String redir_status = record.get (REDIR_STATUS);
-                JPin pin = new JPin(pinID, link, creator, board, note, status, redir, redir_status);
+                JPin pin = new JPin(pinID, link, creator, board, note, status, redir, redir_status,action);
                 JPins.put (pin.getPinID (), pin);
             }
         }catch (Exception e){
