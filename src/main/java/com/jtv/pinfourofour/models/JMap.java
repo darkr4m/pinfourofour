@@ -10,7 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.jtv.pinfourofour.models.CSVHeaders.*;
 
@@ -154,6 +158,47 @@ public class JMap {
             e.printStackTrace();
         }
     }
+
+    /**<b>filterExternal</b>
+     * Separates all pins with an outbound link not leading to your website.
+     * Saved to pins/external/
+     */
+    public void filterExternal(){
+        //File  info
+        File dir = new File ("pins"+File.separator+"external");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("MM_dd_hh-mm");
+        String date = formatter.format(LocalDateTime.now());
+        String outfile = "external"+date+".csv";
+        dir.mkdir ();
+        //Regex
+        String regex = ".*www\\.jtv\\.com.*";
+        Pattern pattern = Pattern.compile (regex);
+        List<String> ext = new ArrayList<> ();
+        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader (CSVHeaders.class))) {
+            JPins.forEach ((k,v) -> {
+                //Matching urls
+                String url = v.getLink ();
+                Matcher matcher = pattern.matcher (url);
+                System.out.println (matcher.matches ()+" "+url); //logging
+                //Write external links to file.
+                if (!matcher.matches ()) {
+                        ext.add (v.getPinID ());
+                        try {
+                            String pinterestURL = "https://www.pinterest.com/pin/" + v.getPinID ();
+                            printer.printRecord (v.getPinID (), v.getBoard (), v.getLink (), v.getCreator (), v.getNote (), v.getStatus (), v.getRedir (), v.getRedir_status (), pinterestURL);
+                        } catch (IOException e){
+                            e.printStackTrace ();
+                        }
+                    }
+                });
+            } catch(IOException e){
+                e.printStackTrace ();
+            }
+            for (String id : ext) {
+                JPins.remove (id);
+            }
+    }
+
 
     public void pinterestImport(Boolean cont){
 
