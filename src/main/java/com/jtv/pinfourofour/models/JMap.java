@@ -119,6 +119,7 @@ public class JMap {
         try (Reader reader = new FileReader (fileName)){
             CSVParser parser = new CSVParser (reader, CSVFormat.DEFAULT.withFirstRecordAsHeader ().withHeader (CSVHeaders.class).withAllowMissingColumnNames(true));
             for (CSVRecord record : parser){
+                String action = record.get (ACTION);
                 String pinID = record.get(PIN_ID);
                 String board = record.get (BOARD);
                 String link = record.get(LINK);

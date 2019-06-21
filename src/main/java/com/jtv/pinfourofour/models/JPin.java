@@ -9,6 +9,7 @@ public class JPin {
     private String status; // for use when JPin link is being checked with HttpUrlConnection
     private String redir; // location header if link status results in a redirect
     private String redir_status; //status of the redirected link
+    private String action; // user defined action to be taken against this pin
 
     /** <b>JPin Constructor</b>
      * Values from Pinterest that are relevant to the functions of this application.
@@ -21,7 +22,7 @@ public class JPin {
      *
      */
     public JPin(String pinID, String link, String creator, String board, String note) {
-        this(pinID,link,creator,board,note,"","","");
+        this(pinID,link,creator,board,note,"","","","");
     }
 
     /**<b>JPin Constructor</b>
@@ -36,8 +37,9 @@ public class JPin {
      * @param status - String, the status code HttpUrlConnection returns from the original link
      * @param redir - String, location header if link status results in a redirect
      * @param redir_status - String, status of the redirected link
+     * @param action - String, user defined action to be taken against this pin
      */
-    public JPin(String pinID, String link, String creator, String board, String note, String status, String redir, String redir_status) {
+    public JPin(String pinID, String link, String creator, String board, String note, String status, String redir, String redir_status, String action) {
         this.pinID = pinID;
         this.link = link;
         this.creator = creator;
@@ -46,6 +48,7 @@ public class JPin {
         this.status = status;
         this.redir = redir;
         this.redir_status = redir_status;
+        this.action = action;
     }
 
     //Getters and setters
@@ -71,4 +74,7 @@ public class JPin {
     public String getRedir_status() { return redir_status; }
 
     public void setRedir_status(String redir_status) { this.redir_status = redir_status; }
+
+    public String getAction() { return action; }
+    public void setAction(String action) { this.action = action; }
 }

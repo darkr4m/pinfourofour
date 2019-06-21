@@ -1,6 +1,7 @@
 package com.jtv.pinfourofour.models;
 
 public enum CSVHeaders {
+    ACTION("action"),
     PIN_ID("id"),
     BOARD("board"),
     LINK("link"),
