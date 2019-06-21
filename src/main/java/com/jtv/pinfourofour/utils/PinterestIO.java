@@ -55,7 +55,12 @@ public class PinterestIO {
 
             Pins pins = pinterest.getMyPins (new PinFields ().withAll ());
             pinsPage.add (pins);
-            if(next != null) savePosition ("myPins", next, fileName);
+            if(next != null) {
+                savePosition ("myPins", next, fileName);
+            } else {
+                savePosition ("myPins", "", fileName);
+                System.out.println ("Cursor reset. Operation finished");
+            }
 
             while (pinterest.getNextPageOfPins (pins.getNextPage ()) != null) {
                 pins = pinterest.getNextPageOfPins (pins.getNextPage ());
@@ -66,8 +71,8 @@ public class PinterestIO {
             }
             System.out.println (pinsPage);
         } catch (PinterestException e) {
-            e.printStackTrace ();
-            System.out.println ("You are rate limited by Pinterest. Please try again later.");
+//            e.printStackTrace ();
+            System.err.println ("You are rate limited by Pinterest. Please try again later.");
         }
 
         return toJMap (pinsPage);
@@ -156,7 +161,7 @@ public class PinterestIO {
     }
 
 
-    /**
+    /**<b>toJMap</b>
      *
      * @param pinsPage
      * @return - JMap of jPins (Pin ID, JPin)
@@ -170,7 +175,6 @@ public class PinterestIO {
                 jMap.add (jPin);
             }
         }
-        jMap.count ();
         return jMap;
     }
 
@@ -201,6 +205,7 @@ public class PinterestIO {
                 String d = URLDecoder.decode (n,"UTF-8");
 //                System.out.println (d);
                 //get cursor
+                //TODO: replace with regex
                 String c = d.substring (d.indexOf ("cursor=")+"cursor=".length ());
 //                System.out.println (c);
                 cursor = c;
