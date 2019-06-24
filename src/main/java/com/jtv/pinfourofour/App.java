@@ -10,7 +10,9 @@ import com.jtv.pinfourofour.utils.Config;
 import com.jtv.pinfourofour.utils.Maintenance;
 import com.jtv.pinfourofour.utils.PinterestIO;
 import com.jtv.pinfourofour.utils.commands.RakeCommand;
+import com.jtv.pinfourofour.utils.commands.RemoveCommand;
 import com.jtv.pinfourofour.utils.commands.StatusReportCommand;
+import com.jtv.pinfourofour.utils.commands.UpdateCommand;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -24,40 +26,50 @@ public class App {
     public String name;
 
     public static void main( String[] args ) {
-        String[] argv = {"-n" ,"max"};
+        String[] argv = {"-n" ,"max", "remove", "-f=pins.csv"};
         App app = new App();
         Config config = new Config();
         RakeCommand rake = new RakeCommand ();
         StatusReportCommand status = new StatusReportCommand ();
+        UpdateCommand update = new UpdateCommand();
+        RemoveCommand remove = new RemoveCommand();
         JCommander jc = JCommander.newBuilder()
                 .addObject(app)
                 .addCommand("config", config)
                 .addCommand ("rake", rake)
                 .addCommand ("status",status)
+                .addCommand("remove", remove)
+                .addCommand("update", update)
                 .build();
         jc.parse(argv);
         boolean command = !(jc.getParsedCommand() == null);
         if(command) {
             switch (jc.getParsedCommand()) {
-                case "config":
-                    System.out.println ("test");
-                    if (!config.access_token.isEmpty()) config.setProperty("access_token", config.access_token);
-                    if (!config.username.isEmpty()) config.setProperty("username", config.username);
-                    break;
+//                case "config":
+//                    System.out.println ("test");
+//                    if (!config.access_token.isEmpty()) config.setProperty("access_token", config.access_token);
+//                    if (!config.username.isEmpty()) config.setProperty("username", config.username);
+//                    break;
                 case "rake":
                     rake(rake.cont);
                     break;
                 case "status":
                     statusReport (status.filterExternal);
                     break;
+                case "update":
+                    updatePins(update.fileName);
+                    break;
+                case "remove":
+                    removePins(remove.fileName);
+                    break;
 //                case "clean":
 //                    clean();
 //                    break;
                 default:
-                    System.out.println("nope");
+                    System.out.println("Nope. This command is not supported.");
+                    jc.usage();
             }
         }
-        removePins ("pins.csv");
     }
 
     private static void rake(Boolean cont) {
@@ -82,13 +94,24 @@ public class App {
 //    }
 
     private static void removePins(String fileName){
+        PinterestIO pio = new PinterestIO ();
+        JMap jMap = new JMap ();
+        jMap.csvImport (fileName);
+        LinkedHashMap<String, JPin> JPins = jMap.getJPins ();
+        JPins.forEach((k,v) -> {
+                    pio.deletePin(k);
+                }
+        );
+    }
+
+    private static void updatePins(String fileName){
         JMap jMap = new JMap ();
         PinterestIO pio = new PinterestIO ();
         jMap.csvImport (fileName);
         LinkedHashMap<String, JPin> JPins = jMap.getJPins ();
-        JPins.forEach((k,v) ->
-                //filler code -- pio delete pin goes here
-                System.out.println(k+" "+v.getLink())
+        JPins.forEach((k,v) -> {
+                    pio.updatePin(k, "", v.getNote(), v.getLink());
+                }
         );
     }
 }
