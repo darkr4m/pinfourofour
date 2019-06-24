@@ -146,7 +146,7 @@ public class App {
         if(username != null) cfg.setProperty("username", username);
     }
 
-    
+
     private static void init(){
         Config config = new Config();
         if(config.isConfigured()) {
