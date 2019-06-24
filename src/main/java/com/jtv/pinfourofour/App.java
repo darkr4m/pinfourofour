@@ -1,24 +1,23 @@
 package com.jtv.pinfourofour;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 
 import com.beust.jcommander.ParameterException;
 import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.JPin;
-import com.jtv.pinfourofour.responses.pin.Pin;
 import com.jtv.pinfourofour.utils.Config;
-import com.jtv.pinfourofour.utils.Maintenance;
 import com.jtv.pinfourofour.utils.PinterestIO;
 import com.jtv.pinfourofour.utils.commands.*;
 
 import java.io.File;
 import java.util.LinkedHashMap;
-import java.util.Set;
 
-/**
- * Hello world!
+/** Pin404
+ *  An internal application for Pinterest Pin management.
+ *  An access token is required for use.
  *
+ *  Please see the Pinterest Developers API documentation for full instructions on how to obtain a token via Postman.
+ *  Generating access tokens is not supported in this application.
  */
 public class App {
 
@@ -72,6 +71,11 @@ public class App {
         }
     }
 
+    /**<b>rake</b>
+     * Rake will attempt to connect to Pinterest and retrieve pins from the account associated with the access token provided under “My Pins.”
+     *
+     * @param cont - Boolean, a flag indicating that the user wishes to continue from a save point.
+     */
     private static void rake(Boolean cont) {
         PinterestIO pio = new PinterestIO ();
         JMap jMap = pio.getPins (cont);
@@ -79,6 +83,11 @@ public class App {
         System.out.println (jMap.count ()+" pin(s) raked. Output file found in pins/rake.");
     }
 
+    /**<b>statusReport</b>
+     * Checks for the response code for each link. If the link ends up being redirected, the redirect location is also checked for a response code.
+     *
+     * @param filterExternal - Boolean, a flag indicating the user wishes to filter any link that does not go to their website.
+     */
     private static void statusReport(boolean filterExternal){
         JMap jMap = new JMap ();
         jMap.csvImport ("pins.csv");
@@ -93,6 +102,11 @@ public class App {
 //        maint.mergeCSV ("testMaint", "master");
 //    }
 
+    /**<b>removePins</b>
+     * Reads a CSV file to batch delete pins from Pinterest from the account associated with the access token provided.
+     *
+     * @param fileName - String, the exact path of the CSV file containing pin information to delete.
+     */
     private static void removePins(String fileName){
         PinterestIO pio = new PinterestIO ();
         JMap jMap = new JMap ();
@@ -104,6 +118,11 @@ public class App {
         );
     }
 
+    /** <b>updatePins</b>
+     * Reads a CSV file to batch update pins from Pinterest from the account associated with the access token provided.
+     *
+     * @param fileName - String, the exact path of the CSV file containing pin information to update.
+     */
     private static void updatePins(String fileName){
         JMap jMap = new JMap ();
         PinterestIO pio = new PinterestIO ();
@@ -115,12 +134,19 @@ public class App {
         );
     }
 
+    /** <b>configure</b>
+     * Set or change application configuration values.
+     *
+     * @param access_token - String, Pinterest access token.
+     * @param username - String, Pinterest username associated with the access token.
+     */
     private static void configure(String access_token, String username){
         Config cfg = new Config();
         if(access_token != null) cfg.setProperty("access_token", access_token);
         if(username != null) cfg.setProperty("username", username);
     }
 
+    
     private static void init(){
         Config config = new Config();
         if(config.isConfigured()) {
