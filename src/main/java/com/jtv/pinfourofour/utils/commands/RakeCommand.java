@@ -5,11 +5,12 @@ import com.beust.jcommander.Parameters;
 
 @Parameters(
         commandNames = "rake",
-        commandDescription = "Gather pins from pinterest."
+        commandDescription = "Gather pins from pinterest.",
+        separators = "="
 )
 public class RakeCommand {
     @Parameter(
-            names = {"-c", "-continue"},
+            names = {"-c", "--continue"},
             description = "Continue from save point."
     )
     public Boolean cont = false;
