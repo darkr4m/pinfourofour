@@ -35,9 +35,10 @@ public class PinterestIO {
             props.load (new BufferedReader (new FileReader ("config/pin.config")));
             if(!props.getProperty ("access_token").isEmpty ()) {
                 pinterest = new Pinterest (props.getProperty ("access_token"));
-                System.out.println ("New Pinterest IO opened with access token "+props.getProperty ("access_token"));
+                System.out.println ("Pinterest connection opened with access token provided.");
             } else {
-                System.out.println ("Access token not found.");
+                System.out.println ("Access token not found. \nPlease ensure you have an access token set in pins.config.");
+                System.exit(0);
             }
         } catch (Exception e) {
             e.printStackTrace ();
