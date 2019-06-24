@@ -26,20 +26,20 @@ On first and subsequent uses, the application will create and modify subdirector
 Make sure your access token is correct and saved in config/pin.config. <br>
 If the config directory does not exist, it can be found after the program runs for the first time.
 
-###Commands
+### Commands
 java -jar pin404.jar command -p --parameters=pins.csv
 
-####config 
+#### config 
  - config -t --token=(access token) -u --username=(username)
  
-####rake
+#### rake
  - rake -c --continue (continue from last rake <t/f> default false)
  
-####check
+#### check
  - check -f --filter (filter external <t/f> default false)
  
-####update
+#### update
  - update -f=<filename.csv> 
  
-####remove
+#### remove
  - remove -f=<filename.csv>
