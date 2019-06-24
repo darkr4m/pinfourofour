@@ -11,33 +11,14 @@ import java.util.Set;
  * Load configuration from config/pin.config file
  *
  */
-@Parameters(
-        commandNames = "config",
-        commandDescription = "Configuration options"
-)
 public class Config {
     private Properties configFileProps = new Properties();
     private File configFile = new File ("config","pin.config");
     private boolean configured = configFile.exists();
 
-    //Pinterest command line parameters
-    @Parameter(
-            names = "token",
-            description = "access token"
-    )
-    public String access_token="";
-
-    @Parameter(
-            names = {"-u", "--username"},
-            description = "username"
-    )
-    public String username="";
-
     public Config(){
-        if(configured) {
+        if(configured){
             load();
-        } else {
-            default_setup();
         }
     }
 
@@ -56,11 +37,11 @@ public class Config {
     }
 
     public Set<Object> getAllPropertyKeys(){
-        Set<Object> keys = configFileProps.keySet ();
+        Set<Object> keys = this.configFileProps.keySet ();
         return keys;
     }
 
-    private void default_setup(){
+    public void default_setup(){
         if(!configured){
             System.out.println("Configuration file not found... running default_setup.");
             try {
@@ -79,10 +60,10 @@ public class Config {
         }
     }
 
-    private void load(){
+    public void load(){
         try  {
             BufferedReader br = new BufferedReader(new FileReader(configFile));
-            System.out.println("Configuration loaded successfully.");
+            configFileProps.load(br);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -93,6 +74,10 @@ public class Config {
         configFileProps.setProperty ("access_token", "");
         configFileProps.setProperty("username", "");
         System.out.println("An access token from Pinterest is required.");
+    }
+
+    public boolean isConfigured() {
+        return configured;
     }
 
     //TODO: proxy default_setup

@@ -3,32 +3,30 @@ package com.jtv.pinfourofour;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
+import com.beust.jcommander.ParameterException;
 import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.JPin;
 import com.jtv.pinfourofour.responses.pin.Pin;
 import com.jtv.pinfourofour.utils.Config;
 import com.jtv.pinfourofour.utils.Maintenance;
 import com.jtv.pinfourofour.utils.PinterestIO;
-import com.jtv.pinfourofour.utils.commands.RakeCommand;
-import com.jtv.pinfourofour.utils.commands.RemoveCommand;
-import com.jtv.pinfourofour.utils.commands.StatusReportCommand;
-import com.jtv.pinfourofour.utils.commands.UpdateCommand;
+import com.jtv.pinfourofour.utils.commands.*;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  * Hello world!
  *
  */
 public class App {
-    @Parameter(names={"name", "-n"})
-    public String name;
 
     public static void main( String[] args ) {
-        String[] argv = {"-n" ,"max", "remove", "-f=pins.csv"};
+        String[] argv = {};
+        init();
         App app = new App();
-        Config config = new Config();
+        ConfigCommand config = new ConfigCommand();
         RakeCommand rake = new RakeCommand ();
         StatusReportCommand status = new StatusReportCommand ();
         UpdateCommand update = new UpdateCommand();
@@ -41,15 +39,17 @@ public class App {
                 .addCommand("remove", remove)
                 .addCommand("update", update)
                 .build();
-        jc.parse(argv);
+        try {
+            jc.parse(argv);
+        } catch (ParameterException e){
+            e.usage();
+        }
         boolean command = !(jc.getParsedCommand() == null);
         if(command) {
             switch (jc.getParsedCommand()) {
-//                case "config":
-//                    System.out.println ("test");
-//                    if (!config.access_token.isEmpty()) config.setProperty("access_token", config.access_token);
-//                    if (!config.username.isEmpty()) config.setProperty("username", config.username);
-//                    break;
+                case "config":
+                    configure(config.access_token, config.username);
+                    break;
                 case "rake":
                     rake(rake.cont);
                     break;
@@ -113,5 +113,21 @@ public class App {
                     pio.updatePin(k, "", v.getNote(), v.getLink());
                 }
         );
+    }
+
+    private static void configure(String access_token, String username){
+        Config cfg = new Config();
+        if(access_token != null) cfg.setProperty("access_token", access_token);
+        if(username != null) cfg.setProperty("username", username);
+    }
+
+    private static void init(){
+        Config config = new Config();
+        if(config.isConfigured()) {
+            config.load();
+            System.out.println("Configuration loaded successfully.");
+        } else {
+            config.default_setup();
+        }
     }
 }
