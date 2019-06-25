@@ -11,7 +11,7 @@ import com.beust.jcommander.Parameters;
 public class RemoveCommand {
     @Parameter(
             names = {"-f", "--filename"},
-            description = "File the contains the pin data to remove.",
+            description = "File that contains the pin data to remove.",
             required = true
     )
     public String fileName;
