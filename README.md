@@ -12,12 +12,12 @@ An internal Pinterest management tool. Designed to automate the process of updat
  _Ensure that the data is saved in the same format!_ <br>
 CSV warnings
 
-##Usage
+## Usage
 
 The pin404.jar is meant to stay inside of a dedicated containing directory. 
 On first and subsequent uses, the application will create and modify subdirectories and files needed for operation.
 
-###Configuration
+### Configuration
 **Configuration file found in  config/pin.config** <br>
 #### Pinterest - <br>
 **Access_token** - The access token to be used while performing any actions with the Pinterest API _**(REQUIRED)**_ <br>
