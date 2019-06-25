@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 public class App {
 
     public static void main( String[] args ) {
-        String[] argv = {};
+        String[] argv = {"status", "-f=pins.csv"};
         init();
         App app = new App();
         ConfigCommand config = new ConfigCommand();
@@ -39,7 +39,7 @@ public class App {
                 .addCommand("update", update)
                 .build();
         try {
-            jc.parse(args);
+            jc.parse(argv);
         } catch (ParameterException e){
             e.usage();
         }
@@ -53,7 +53,7 @@ public class App {
                     rake(rake.cont);
                     break;
                 case "status":
-                    statusReport (status.filterExternal);
+                    statusReport (status.filterExternal, status.fileName);
                     break;
                 case "update":
                     updatePins(update.fileName);
@@ -87,10 +87,11 @@ public class App {
      * Checks for the response code for each link. If the link ends up being redirected, the redirect location is also checked for a response code.
      *
      * @param filterExternal - Boolean, a flag indicating the user wishes to filter any link that does not go to their website.
+     * @param fileName - String, the exact path of the CSV file containing pin information to check.
      */
-    private static void statusReport(boolean filterExternal){
+    private static void statusReport(boolean filterExternal, String fileName){
         JMap jMap = new JMap ();
-        jMap.csvImport ("pins.csv");
+        jMap.csvImport (fileName);
         jMap.count ();
         if(filterExternal) jMap.filterExternal ();
         jMap.checkLinks ();
