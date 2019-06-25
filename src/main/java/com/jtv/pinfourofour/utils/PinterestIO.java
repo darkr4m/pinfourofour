@@ -137,6 +137,7 @@ public class PinterestIO {
 
                 } else {
                     System.out.println ("Pin " + pinID + " not updated.");
+                    System.out.println (response);
                 }
             } catch (PinterestException e) {
                 System.out.println ("Unable to update pin. Rate limited by Pinterest.");
