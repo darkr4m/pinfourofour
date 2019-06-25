@@ -39,7 +39,7 @@ public class App {
                 .addCommand("update", update)
                 .build();
         try {
-            jc.parse(argv);
+            jc.parse(args);
         } catch (ParameterException e){
             e.usage();
         }
@@ -142,8 +142,14 @@ public class App {
      */
     private static void configure(String access_token, String username){
         Config cfg = new Config();
-        if(access_token != null) cfg.setProperty("access_token", access_token);
-        if(username != null) cfg.setProperty("username", username);
+        if(access_token != null) {
+            cfg.setProperty("access_token", access_token);
+            System.out.println("Access token set successfully.");
+        }
+        if(username != null) {
+            cfg.setProperty("username", username);
+            System.out.println("Username set to "+username+" successfully.");
+        }
     }
 
 
