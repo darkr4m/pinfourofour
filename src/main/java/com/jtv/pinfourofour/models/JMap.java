@@ -34,9 +34,9 @@ public class JMap {
     /** <b>JMap Constructor</b>
      *  Just prints an instantiation confirmation to the console.
      */
-    public JMap() {
-        System.out.println("New JMap created.");
-    }
+//    public JMap() {
+//        System.out.println("New JMap created.");
+//    }
 
     /**<b>getJPins</b>
      * Invoking this method prints out a nice list of pins in the console and returns a LinkedHashMap of JPins.
