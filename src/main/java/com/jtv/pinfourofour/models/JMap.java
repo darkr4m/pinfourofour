@@ -130,8 +130,8 @@ public class JMap {
                 JPin pin = new JPin(pinID, link, creator, board, note, status, redir, redir_status,action);
                 JPins.put (pin.getPinID (), pin);
             }
-        }catch (Exception e){
-            e.printStackTrace ();
+        } catch (Exception e){
+            System.err.println(e.getMessage());
         }
     }
 
@@ -154,7 +154,8 @@ public class JMap {
                 }
             });
         } catch(Exception e){
-            e.printStackTrace();
+            System.err.println("The file "+dir+File.separator+outfile+" could not be written.");
+            System.exit(0);
         }
     }
 

@@ -73,7 +73,7 @@ public class PinterestIO {
             System.out.println (pinsPage);
         } catch (PinterestException e) {
 //            e.printStackTrace ();
-            System.err.println ("You are rate limited by Pinterest. Please try again later.");
+            System.err.println (e.getMessage());
         }
 
         return toJMap (pinsPage);
