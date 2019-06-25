@@ -2,7 +2,9 @@ package com.jtv.pinfourofour.utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -79,8 +81,10 @@ public class Network {
                 }
                 redir_status = conn.getResponseCode ();
 //            }
-        } catch (Exception e) {
-            e.printStackTrace ();
+        } catch (MalformedURLException e) {
+            System.err.println("Bad url. Cannot check this link.");
+        } catch (IOException e){
+            System.err.println(e.getMessage());
         }
         System.out.println ("Done..." + link + " resulted in status code: " + redir_status + "\n ---------");
         return status;
