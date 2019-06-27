@@ -1,47 +1,3 @@
-<<<<<<< 91d0cb48345027fb309ed34f16e313da90d5be86:src/main/java/com/jtv/pinfourofour/models/pin/JPin.java
-package com.jtv.pinfourofour.models.pin;
-
-public class JPin {
-    private String pinID; // id
-    private String creator; // creator
-    private String board; // name of the board
-    private String link; // original_link
-    private String note; // note
-
-    /**<b>JPin Constructor</b>
-     * Values from Pinterest that are relevant to the functions of this application.
-     * To be used for generation of link report.
-     *
-     * @param pinID - String, ID of the pin
-     * @param link - String, the original outbound link of the pin
-     * @param creator - String, the creator/owner of the pin
-     * @param board - String, what board the pin belongs to
-     * @param note - String, the description or note of the pin
-     */
-    public JPin(String pinID, String link, String creator, String board, String note) {
-        this.pinID = pinID;
-        this.creator = creator;
-        this.board = board;
-        this.link = link;
-        this.note = note;
-    }
-
-    //Getters and setters
-
-    public String getPinID() { return pinID; }
-
-    public String getLink() { return link; }
-    public void setLink(String link) { this.link = link; }
-
-    public String getCreator() { return creator; }
-
-    public String getBoard() { return board; }
-
-    public String getNote() { return note; }
-    public void setNote(String note) { this.note = note; }
-
-}
-=======
 package com.jtv.pinfourofour.models;
 
 public class JPin {
@@ -120,4 +76,3 @@ public class JPin {
     public String getAction() { return action; }
     public void setAction(String action) { this.action = action; }
 }
->>>>>>> Add db connection to main. Add console output to sucessful connection.:src/main/java/com/jtv/pinfourofour/models/JPin.java

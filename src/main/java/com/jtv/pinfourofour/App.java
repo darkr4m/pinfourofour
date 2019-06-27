@@ -3,6 +3,7 @@ package com.jtv.pinfourofour;
 import com.beust.jcommander.JCommander;
 
 import com.beust.jcommander.ParameterException;
+import com.jtv.pinfourofour.models.Datasource;
 import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.utils.Config;
@@ -22,7 +23,12 @@ import java.util.LinkedHashMap;
 public class App {
 
     public static void main( String[] args ) {
-        String[] argv = {"status", "-f=pins.csv"};
+        Datasource data = new Datasource();
+        if(!data.open()){
+            System.out.println("Could not establish a connection to the database.");
+            return;
+        }
+        String[] argv = {};
         init();
         App app = new App();
         ConfigCommand config = new ConfigCommand();
@@ -69,6 +75,7 @@ public class App {
                     jc.usage();
             }
         }
+        data.close();
     }
 
     /**<b>rake</b>
