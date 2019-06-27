@@ -24,6 +24,7 @@ public class Datasource {
     public boolean open(){
         try {
             conn = DriverManager.getConnection(CONNECTION_STRING);
+            System.out.println("Successfully established a database connection to "+DB_NAME+".");
             return true;
         } catch (SQLException e){
             System.err.println("Error - Could not establish a connection to the database "+DB_NAME+": "+e.getMessage());
@@ -35,6 +36,7 @@ public class Datasource {
         try{
             if(conn != null){
                 conn.close();
+                System.out.println("Database connection closed.");
             }
         } catch (SQLException e) {
             System.err.println("Error - Could not close the connection to the database: "+e.getMessage());

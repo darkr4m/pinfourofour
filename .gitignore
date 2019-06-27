@@ -99,3 +99,5 @@ fabric.properties
 src/main/resources/
 
 *.config
+
+*.db

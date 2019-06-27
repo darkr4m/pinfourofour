@@ -52,7 +52,6 @@ public class JPin {
     }
 
     //Getters and setters
-
     public String getPinID() { return pinID; }
 
     public String getLink() { return link; }
@@ -72,7 +71,6 @@ public class JPin {
     public void setRedir(String redir) { this.redir = redir; }
 
     public String getRedir_status() { return redir_status; }
-
     public void setRedir_status(String redir_status) { this.redir_status = redir_status; }
 
     public String getAction() { return action; }
