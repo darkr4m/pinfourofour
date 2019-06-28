@@ -94,7 +94,6 @@ public class App {
         jMap.csvImport (fileName);
         jMap.count ();
         if(filterExternal) jMap.filterExternal ();
-        jMap.checkLinks ();
         jMap.csvExport ("pins"+File.separator+"internal","internal");
     }
 
