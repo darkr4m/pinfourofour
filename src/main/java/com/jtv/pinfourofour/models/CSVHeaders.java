@@ -6,9 +6,9 @@ public enum CSVHeaders {
     LINK("link"),
     CREATOR("creator"),
     NOTE("note"),
-    STATUS("status"),
-    REDIR_LINK("redir"),
-    REDIR_STATUS("redir_status"),
+    STATUS("link_response_code"),
+    REDIR_LINK("redirect_location"),
+    REDIR_STATUS("redirect_response_code"),
     ACTION("action");
 
     public String name;
@@ -17,4 +17,8 @@ public enum CSVHeaders {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }
