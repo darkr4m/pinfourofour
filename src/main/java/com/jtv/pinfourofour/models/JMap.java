@@ -1,7 +1,8 @@
 package com.jtv.pinfourofour.models;
 
 import com.jtv.pinfourofour.models.pin.JPin;
-import com.jtv.pinfourofour.utils.Network;
+import com.jtv.pinfourofour.models.pin.JPinDTO;
+import com.jtv.pinfourofour.utils.builders.pin.JPinDTOBuilder;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -47,6 +48,21 @@ public class JMap {
     public LinkedHashMap<String, JPin> getJPins() {
         JPins.forEach((k,v) ->  System.out.println(k+" "+v.getLink()));
         return JPins;
+    }
+
+    /**<b>createJPin</b>
+     * TODO: doc
+     *
+     * @param pinID
+     * @param creator
+     * @param board
+     * @param note
+     * @param link
+     * @return
+     */
+    public static JPin createJPin(String pinID, String creator, String board, String note, String link){
+        JPin jPin = new JPin (pinID, creator, board, note, link);
+        return jPin;
     }
 
     /**<b>add</b>
@@ -111,6 +127,7 @@ public class JMap {
         return size;
     }
 
+
     /**<b>csvImport</b>
      * Imports contents from a CSV file. Parses records into JPins and adds each to JMap.
      *
@@ -128,12 +145,12 @@ public class JMap {
                 String redir = record.get (REDIR_LINK);
                 String redir_status = record.get (REDIR_STATUS);
                 String action = record.get (ACTION);
-                JPin pin = new JPin(pinID, link, creator, board, note, status, redir, redir_status,action);
-                JPins.put (pin.getPinID (), pin);
+                add(createJPin(pinID, link, creator, board, note));
             }
         } catch (Exception e){
             System.err.println(e.getMessage());
         }
+
     }
 
     /**<b>csvExport</b>
@@ -149,7 +166,7 @@ public class JMap {
         try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader (CSVHeaders.class))){
             JPins.forEach ((k, v) -> {
                 try {
-                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getCreator (), v.getNote(), v.getStatus(), v.getRedir(), v.getRedir_status (), v.getAction ());
+                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getCreator (), v.getNote());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -185,7 +202,7 @@ public class JMap {
                 if (!matcher.matches ()) {
                         ext.add (v.getPinID ());
                         try {
-                            printer.printRecord (v.getPinID (), v.getBoard (), v.getLink (), v.getCreator (), v.getNote (), v.getStatus (), v.getRedir (), v.getRedir_status (), v.getAction ());
+                            printer.printRecord (v.getPinID (), v.getBoard (), v.getLink (), v.getCreator (), v.getNote ());
                         } catch (IOException e){
                             e.printStackTrace ();
                         }
@@ -198,19 +215,11 @@ public class JMap {
                 JPins.remove (id);
             }
     }
-
-
-    public void pinterestImport(Boolean cont){
-
+    
+    private static JPinDTO buildDTODirector(JPinDTOBuilder builder, JPin jPin){
+        return builder.withPinID (jPin.getPinID ()).withCreator (jPin.getCreator ()).withBoard (jPin.getBoard ())
+                .withLink (jPin.getLink ()).build ();
     }
 
-    public void checkLinks(){
-        Network network = new Network ();
-        JPins.forEach ((k,v) -> {
-            v.setStatus (String.valueOf (network.checkStatus (v.getLink ())));
-            v.setRedir (network.getLocation ());
-            v.setRedir_status (String.valueOf (network.getRedir_status ()));
-        });
-    }
 
 }
