@@ -1,9 +1,9 @@
 package com.jtv.pinfourofour.models;
 
-import com.jtv.pinfourofour.utils.services.NetworkService;
 import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDTO;
 import com.jtv.pinfourofour.utils.builders.pin.JPinDTOBuilder;
+import com.jtv.pinfourofour.utils.services.NetworkService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -142,10 +142,6 @@ public class JMap {
                 String link = record.get(LINK);
                 String creator = record.get (CREATOR);
                 String note = record.get(NOTE);
-                String status = record.get(STATUS);
-                String redir = record.get (REDIR_LINK);
-                String redir_status = record.get (REDIR_STATUS);
-                String action = record.get (ACTION);
                 add(createJPin(pinID, link, creator, board, note));
             }
         } catch (Exception e){
@@ -218,17 +214,13 @@ public class JMap {
     }
     
     private static JPinDTO buildDTODirector(JPinDTOBuilder builder, JPin jPin){
+        NetworkService nws = new NetworkService (jPin.getLink ());
+        nws.execute ();
         return builder.withPinID (jPin.getPinID ()).withCreator (jPin.getCreator ()).withBoard (jPin.getBoard ())
-                .withLink (jPin.getLink ()).build ();
+                .withLink (jPin.getLink ())
+                .withLinkResponseCode (nws.getLinkResponseCode ())
+                .withLinkRedirectLocation (nws.getRedirectLocation ())
+                .withLinkRedirectLocationResponseCode (nws.getRedirectLocationResponseCode ())
+                .build ();
     }
-
-    public void checkLinks(){
-        Network network = new Network ();
-        JPins.forEach ((k,v) -> {
-            v.setStatus (String.valueOf (network.checkStatus (v.getLink ())));
-            v.setRedir (network.getLocation ());
-            v.setRedir_status (String.valueOf (network.getRedir_status ()));
-        });
-    }
-
 }
