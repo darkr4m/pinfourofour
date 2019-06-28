@@ -1,5 +1,6 @@
 package com.jtv.pinfourofour.models;
 
+import com.jtv.pinfourofour.utils.services.NetworkService;
 import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDTO;
 import com.jtv.pinfourofour.utils.builders.pin.JPinDTOBuilder;
@@ -221,5 +222,13 @@ public class JMap {
                 .withLink (jPin.getLink ()).build ();
     }
 
+    public void checkLinks(){
+        Network network = new Network ();
+        JPins.forEach ((k,v) -> {
+            v.setStatus (String.valueOf (network.checkStatus (v.getLink ())));
+            v.setRedir (network.getLocation ());
+            v.setRedir_status (String.valueOf (network.getRedir_status ()));
+        });
+    }
 
 }
