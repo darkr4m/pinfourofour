@@ -1,4 +1,4 @@
-package com.jtv.pinfourofour.utils.commands;
+package com.jtv.pinfourofour.commands;
 
 import com.beust.jcommander.Parameters;
 

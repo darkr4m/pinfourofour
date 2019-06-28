@@ -6,7 +6,7 @@ import com.jtv.pinfourofour.fields.pin.PinFields;
 import com.jtv.pinfourofour.methods.network.ResponseMessageAndStatusCode;
 import com.jtv.pinfourofour.methods.pin.PinEndPointURIBuilder;
 import com.jtv.pinfourofour.models.JMap;
-import com.jtv.pinfourofour.models.JPin;
+import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.responses.pin.Pin;
 import com.jtv.pinfourofour.responses.pin.Pins;
 

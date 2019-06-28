@@ -1,14 +1,14 @@
-package com.jtv.pinfourofour.utils.commands;
+package com.jtv.pinfourofour.commands;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
 @Parameters(
-        commandNames = "remove",
-        commandDescription = "Removes pins from Pinterest.",
+        commandNames = "update",
+        commandDescription = "Updates pins on Pinterest.",
         separators = "="
 )
-public class RemoveCommand {
+public class UpdateCommand {
     @Parameter(
             names = {"-f", "--filename"},
             description = "File that contains the pin data to remove.",

@@ -4,10 +4,10 @@ import com.beust.jcommander.JCommander;
 
 import com.beust.jcommander.ParameterException;
 import com.jtv.pinfourofour.models.JMap;
-import com.jtv.pinfourofour.models.JPin;
+import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.utils.Config;
 import com.jtv.pinfourofour.utils.PinterestIO;
-import com.jtv.pinfourofour.utils.commands.*;
+import com.jtv.pinfourofour.commands.*;
 
 import java.io.File;
 import java.util.LinkedHashMap;
