@@ -16,11 +16,11 @@ public class Config {
     private File configFile = new File ("config","pin.config");
     private boolean configured = configFile.exists();
 
-    public Config(){
-        if(configured){
-            load();
-        }
-    }
+//    public Config(){
+//        if(configured){
+//            load();
+//        }
+//    }
 
     public String getProperty(String key){
         String value = this.configFileProps.getProperty (key);
@@ -48,7 +48,6 @@ public class Config {
                 File configDir = new File("config");
                 configDir.mkdir();
                 configFile.createNewFile();
-//                proxySetup ();
                 pinterestDefaultSetup();
                 configFileProps.store(new FileOutputStream(configFile.getAbsolutePath()), null);
                 configured = true;
@@ -80,10 +79,4 @@ public class Config {
         return configured;
     }
 
-    //TODO: proxy default_setup
-//    private void proxySetup(){
-//        configFileProps.setProperty("proxy", "");
-//        configFileProps.setProperty("http_proxy_addr", "");
-//        configFileProps.setProperty("port", "");
-//    }
 }
