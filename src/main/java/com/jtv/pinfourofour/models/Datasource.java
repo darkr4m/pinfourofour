@@ -35,6 +35,12 @@ public class Datasource {
     private static final String INSERT_PIN_BASIC_PREP = "INSERT INTO "+TABLE_PINS+"("+COLUMN_PIN_ID+", "+COLUMN_BOARD+", "+COLUMN_LINK+", "+COLUMN_NOTE+", "+COLUMN_ACTION+") VALUES(?, ?, ?, ?, ?)";
     private static final String INSERT_PIN_FULL_PREP = "INSERT INTO "+TABLE_PINS+"("+COLUMN_PIN_ID+", "+COLUMN_BOARD+", "+COLUMN_LINK+", "+COLUMN_NOTE+", "+COLUMN_LINK_RESPONSE_CODE+", "
             +COLUMN_REDIRECT_LOCATION+", "+COLUMN_REDIRECT_LOCATION_RESPONSE_CODE+", "+COLUMN_ACTION+") VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE_PIN_LINK_PREP = "UPDATE "+TABLE_PINS+" SET "+COLUMN_LINK+"= ?"+" WHERE "+COLUMN_PIN_ID+"= ?";
+    private static final String UPDATE_PIN_ACTION_PREP = "UPDATE "+TABLE_PINS+" SET "+COLUMN_ACTION+"= ?"+" WHERE "+COLUMN_PIN_ID+"= ?";
+    private static final String UPDATE_PIN_BOARD_PREP = "UPDATE "+TABLE_PINS+" SET "+COLUMN_BOARD+"= ?"+" WHERE "+COLUMN_PIN_ID+"= ?";
+    private static final String UPDATE_PIN_RESPONSES_PREP = "UPDATE "+TABLE_PINS+" SET "+COLUMN_LINK_RESPONSE_CODE+"= ?, "+COLUMN_REDIRECT_LOCATION+"= ?, "
+            +COLUMN_REDIRECT_LOCATION_RESPONSE_CODE+"= ?" +" WHERE "+COLUMN_PIN_ID+"= ?";
+    private static final String DELETE_PIN_PREP = "DELETE FROM "+TABLE_PINS+" WHERE "+COLUMN_PIN_ID+"= ?";
 
     //==================================================================
     // SINGLETON MAGIC
@@ -55,6 +61,11 @@ public class Datasource {
     private PreparedStatement queryByResponseCode;
     private PreparedStatement insertPinBasic;
     private PreparedStatement insertPinFull;
+    private PreparedStatement updatePinLink;
+    private PreparedStatement updatePinAction;
+    private PreparedStatement updatePinBoard;
+    private PreparedStatement updatePinResponses;
+    private PreparedStatement deletePin;
 
     //==================================================================
     // RESOURCE MANAGEMENT
@@ -73,6 +84,12 @@ public class Datasource {
             queryByResponseCode = conn.prepareStatement(QUERY_TABLE_BY_RESPSONSE_PREP);
             insertPinBasic = conn.prepareStatement(INSERT_PIN_BASIC_PREP);
             insertPinFull = conn.prepareStatement(INSERT_PIN_FULL_PREP);
+            updatePinLink = conn.prepareStatement(UPDATE_PIN_LINK_PREP);
+            updatePinAction = conn.prepareStatement(UPDATE_PIN_ACTION_PREP);
+            updatePinBoard = conn.prepareStatement(UPDATE_PIN_BOARD_PREP);
+            updatePinResponses = conn.prepareStatement(UPDATE_PIN_RESPONSES_PREP);
+            deletePin = conn.prepareStatement(DELETE_PIN_PREP);
+
             System.out.println("Successfully established a database connection to " + DB_NAME + ".");
             return true;
         } catch (SQLException e) {
@@ -88,6 +105,11 @@ public class Datasource {
             if(queryByResponseCode != null) queryByResponseCode.close();
             if(insertPinBasic != null) insertPinBasic.close();
             if(insertPinFull != null) insertPinFull.close();
+            if(updatePinLink != null) updatePinLink.close();
+            if(updatePinAction != null) updatePinAction.close();
+            if(updatePinBoard != null) updatePinBoard.close();
+            if(updatePinResponses != null) updatePinResponses.close();
+            if(deletePin != null) deletePin.close();
             if (conn != null) {
                 conn.close();
                 System.out.println("Database connection closed.");
@@ -259,8 +281,94 @@ public class Datasource {
     //==================================================================
     // UPDATE
     //==================================================================
-    
+    public boolean updatePinLink(String link, String pinID){
+        try{
+            updatePinLink.setString(1, link);
+            updatePinLink.setString(2, pinID);
+            if(queryByPinID(pinID) != null) {
+                updatePinLink.execute();
+                System.out.println("Sucessfully changed link on pin "+pinID+" to "+link+".");
+                return true;
+            }
+            System.err.println("The pin with the ID "+pinID+" does not exist in the database.");
+            return false;
+        } catch (SQLException e){
+            System.out.println("Could not update pin: "+e.getMessage());
+        }
+        return false;
+    }
 
+    public boolean updatePinAction(String action, String pinID){
+        try{
+            updatePinAction.setString(1, action);
+            updatePinAction.setString(2, pinID);
+            if(queryByPinID(pinID) != null) {
+                updatePinAction.execute();
+                System.out.println("Sucessfully changed action on pin "+pinID+" to "+action+".");
+                return true;
+            }
+            System.err.println("The pin with the ID "+pinID+" does not exist in the database.");
+            return false;
+        } catch (SQLException e){
+            System.out.println("Could not update pin: "+e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean updatePinBoard(String board, String pinID){
+        try{
+            updatePinBoard.setString(1, board);
+            updatePinBoard.setString(2, pinID);
+            if(queryByPinID(pinID) != null) {
+                updatePinBoard.execute();
+                System.out.println("Sucessfully changed board on pin "+pinID+" to "+board+".");
+                return true;
+            }
+            System.err.println("The pin with the ID "+pinID+" does not exist in the database.");
+            return false;
+        } catch (SQLException e){
+            System.out.println("Could not update pin: "+e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean updatePinResponses(int linkResponseCode, String linkRedirectLocation, int linkRedirectionResponseCode, String pinID){
+        try{
+            updatePinResponses.setInt(1, linkResponseCode);
+            updatePinResponses.setString(2, linkRedirectLocation);
+            updatePinResponses.setInt(3, linkRedirectionResponseCode);
+            updatePinResponses.setString(4, pinID);
+            if(queryByPinID(pinID) != null) {
+                updatePinResponses.execute();
+                System.out.println("Sucessfully changed responses on pin "+pinID+".");
+                return true;
+            }
+            System.err.println("The pin with the ID "+pinID+" does not exist in the database.");
+            return false;
+        } catch (SQLException e){
+            System.out.println("Could not update pin: "+e.getMessage());
+        }
+        return false;
+    }
+
+    //==================================================================
+    // DELETE
+    //==================================================================
+    public boolean deletePin(String pinID) {
+        try {
+            deletePin.setString(1, pinID);
+            if (queryByPinID(pinID) != null) {
+                deletePin.execute();
+                System.out.println("Sucessfully deleted " + pinID + ".");
+                return true;
+            }
+            System.err.println("The pin with the ID " + pinID + " does not exist in the database.");
+            return false;
+        } catch (SQLException e) {
+            System.out.println("Could not update pin: " + e.getMessage());
+        }
+        return false;
+    }
 
     //==================================================================
     // ENTITIES
