@@ -3,14 +3,17 @@ package com.jtv.pinfourofour;
 import com.beust.jcommander.JCommander;
 
 import com.beust.jcommander.ParameterException;
+import com.jtv.pinfourofour.models.Datasource;
 import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.pin.JPin;
+import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
 import com.jtv.pinfourofour.utils.Config;
 import com.jtv.pinfourofour.utils.PinterestIO;
 import com.jtv.pinfourofour.commands.*;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /** Pin404
  *  An internal application for Pinterest Pin management.
@@ -22,7 +25,12 @@ import java.util.LinkedHashMap;
 public class App {
 
     public static void main( String[] args ) {
-        String[] argv = {"status", "-f=pins.csv"};
+        Datasource data = Datasource.getInstance();
+        if(!data.open()){
+            System.out.println("Could not establish a connection to the database.");
+            return;
+        }
+        String[] argv = {};
         init();
         App app = new App();
         ConfigCommand config = new ConfigCommand();
@@ -69,6 +77,15 @@ public class App {
                     jc.usage();
             }
         }
+        List<JPinDatabaseDTO> jPins = data.queryAllPins ();
+        if(jPins == null) {
+            System.out.println ("No JPins");
+            return;
+        }
+        for (JPinDatabaseDTO j : jPins) {
+            System.out.println ("link: "+ j.getPinId ());
+        }
+        data.close();
     }
 
     /**<b>rake</b>
