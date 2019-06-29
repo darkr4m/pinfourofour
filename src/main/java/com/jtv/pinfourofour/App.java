@@ -25,7 +25,7 @@ import java.util.List;
 public class App {
 
     public static void main( String[] args ) {
-        Datasource data = new Datasource();
+        Datasource data = Datasource.getInstance();
         if(!data.open()){
             System.out.println("Could not establish a connection to the database.");
             return;

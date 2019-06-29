@@ -21,9 +21,22 @@ public class Datasource {
     public static final String COLUMN_REDIRECT_LOCATION_RESPONSE_CODE = "redirect_location_response_code";
     public static final String COLUMN_ACTION = "action";
 
+    //Singleton Logic
+    private Datasource(){}
+    private static class DatasourceHolder{
+        private static Datasource INSTANCE = new Datasource();
+    }
+    public static Datasource getInstance(){
+        return DatasourceHolder.INSTANCE;
+    }
+
 
     private Connection conn;
 
+    /**<b>open</b>
+     * Opens a database connection.
+     * @return
+     */
     public boolean open(){
         try {
             conn = DriverManager.getConnection(CONNECTION_STRING);
