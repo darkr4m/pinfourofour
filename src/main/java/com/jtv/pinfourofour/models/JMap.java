@@ -142,7 +142,6 @@ public class JMap {
                 String link = record.get(LINK);
                 String creator = record.get (CREATOR);
                 String note = record.get(NOTE);
-                add(createJPin(pinID, link, creator, board, note));
             }
         } catch (Exception e){
             System.err.println(e.getMessage());
@@ -172,55 +171,5 @@ public class JMap {
             System.err.println("The file "+dir+File.separator+outfile+" could not be written.");
             System.exit(0);
         }
-    }
-
-    /**<b>filterExternal</b>
-     * Separates all pins with an outbound link not leading to your website.
-     * Saved to pins/external/
-     */
-    public void filterExternal(){
-        //File  info
-        File dir = new File ("pins"+File.separator+"external");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("MM_dd_hh-mm");
-        String date = formatter.format(LocalDateTime.now());
-        String outfile = "external"+date+".csv";
-        dir.mkdir ();
-        //Regex
-        String regex = ".*www\\.jtv\\.com.*";
-        Pattern pattern = Pattern.compile (regex);
-        List<String> ext = new ArrayList<> ();
-        try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader (CSVHeaders.class))) {
-            JPins.forEach ((k,v) -> {
-                //Matching urls
-                String url = v.getLink ();
-                Matcher matcher = pattern.matcher (url);
-                System.out.println (matcher.matches ()+" "+url); //logging
-                //Write external links to file.
-                if (!matcher.matches ()) {
-                        ext.add (v.getPinID ());
-                        try {
-                            printer.printRecord (v.getPinID (), v.getBoard (), v.getLink (), v.getCreator (), v.getNote ());
-                        } catch (IOException e){
-                            e.printStackTrace ();
-                        }
-                    }
-                });
-            } catch(IOException e){
-                e.printStackTrace ();
-            }
-            for (String id : ext) {
-                JPins.remove (id);
-            }
-    }
-    
-    private static JPinDTO buildDTODirector(JPinDTOBuilder builder, JPin jPin){
-        NetworkService nws = new NetworkService (jPin.getLink ());
-        nws.execute ();
-        return builder.withPinID (jPin.getPinID ()).withCreator (jPin.getCreator ()).withBoard (jPin.getBoard ())
-                .withLink (jPin.getLink ())
-                .withLinkResponseCode (nws.getLinkResponseCode ())
-                .withLinkRedirectLocation (nws.getRedirectLocation ())
-                .withLinkRedirectLocationResponseCode (nws.getRedirectLocationResponseCode ())
-                .build ();
     }
 }
