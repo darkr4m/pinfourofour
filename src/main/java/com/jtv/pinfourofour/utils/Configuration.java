@@ -126,6 +126,8 @@ public class Configuration {
             if(!this.createConfiguration()){
                 System.exit(0);
             }
+        } else {
+            System.out.println("Configuration loaded.");
         }
     }
     private static class ConfigurationHolder {

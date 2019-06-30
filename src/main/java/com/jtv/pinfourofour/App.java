@@ -8,6 +8,7 @@ import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
 import com.jtv.pinfourofour.utils.Config;
+import com.jtv.pinfourofour.utils.Configuration;
 import com.jtv.pinfourofour.utils.PinterestIO;
 import com.jtv.pinfourofour.commands.*;
 
@@ -23,6 +24,7 @@ import java.util.List;
  *  Generating access tokens is not supported in this application.
  */
 public class App {
+    private static Configuration configuration = Configuration.getInstance();
 
     public static void main( String[] args ) {
         Datasource data = Datasource.getInstance();
@@ -31,7 +33,6 @@ public class App {
             return;
         }
         String[] argv = {};
-        init();
         App app = new App();
         ConfigCommand config = new ConfigCommand();
         RakeCommand rake = new RakeCommand ();
@@ -77,14 +78,6 @@ public class App {
                     jc.usage();
             }
         }
-        List<JPinDatabaseDTO> jPins = data.queryAllPins ();
-        if(jPins == null) {
-            System.out.println ("No JPins");
-            return;
-        }
-        for (JPinDatabaseDTO j : jPins) {
-            System.out.println ("link: "+ j.getPinId ());
-        }
         data.close();
     }
 
@@ -110,7 +103,6 @@ public class App {
         JMap jMap = new JMap ();
         jMap.csvImport (fileName);
         jMap.count ();
-        if(filterExternal) jMap.filterExternal ();
         jMap.csvExport ("pins"+File.separator+"internal","internal");
     }
 
@@ -158,25 +150,13 @@ public class App {
      * @param username - String, Pinterest username associated with the access token.
      */
     private static void configure(String access_token, String username){
-        Config cfg = new Config();
         if(access_token != null) {
-            cfg.setProperty("access_token", access_token);
+            configuration.setAccessToken(access_token);
             System.out.println("Access token set successfully.");
         }
         if(username != null) {
-            cfg.setProperty("username", username);
+            configuration.setUsername(username);
             System.out.println("Username set to "+username+" successfully.");
-        }
-    }
-
-
-    private static void init(){
-        Config config = new Config();
-        if(config.isConfigured()) {
-            config.load();
-            System.out.println("Configuration loaded successfully.");
-        } else {
-            config.default_setup();
         }
     }
 }
