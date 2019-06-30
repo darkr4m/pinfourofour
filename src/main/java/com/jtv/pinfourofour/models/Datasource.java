@@ -250,18 +250,12 @@ public class Datasource {
             insertPinBasic.setString(3, link);
             insertPinBasic.setString(4, note);
             insertPinBasic.setString(5, action);
-            if(queryByPinID(pinID) == null) {
-                insertPinBasic.execute();
-                return true;
+            insertPinBasic.execute();
+            return true;
+            } catch (SQLException e){
+                System.err.println("Inserting pins failed: "+e.getMessage());
+                return false;
             }
-            System.err.println("There is a pin with this ID already in the database: ");
-            System.out.println(queryByPinID(pinID));
-            return false;
-        } catch (SQLException e){
-            System.out.println("Inserting pins failed.\n");
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public boolean insertPinBasic(JPin jPin){
@@ -271,13 +265,8 @@ public class Datasource {
             insertPinBasic.setString(3, jPin.getLink());
             insertPinBasic.setString(4, jPin.getNote());
             insertPinBasic.setString(5, "build");
-            if(queryByPinID(jPin.getPinID()) == null) {
-                insertPinBasic.execute();
-                return true;
-            }
-            System.err.println("There is a pin with this ID already in the database: ");
-            System.out.println(queryByPinID(jPin.getPinID()));
-            return false;
+            insertPinBasic.execute();
+            return true;
         } catch (SQLException e){
             System.out.println("Inserting pins failed.\n");
             e.printStackTrace();
@@ -295,16 +284,11 @@ public class Datasource {
             insertPinFull.setString(6, linkRedirectLocation);
             insertPinFull.setInt(7, linkRedirectionResponseCode);
             insertPinFull.setString(8, action);
-            if(queryByPinID(pinID) == null) {
-                insertPinFull.execute();
-                return true;
-            }
-            System.err.println("There is a pin with this ID already in the database: ");
-            System.out.println(queryByPinID(pinID));
-            return false;
+            insertPinFull.execute();
+            return true;
+
         } catch (SQLException e){
-            System.out.println("Inserting pins failed.\n");
-            e.printStackTrace();
+            System.out.println("Inserting pins failed: " +e.getMessage());
             return false;
         }
     }
