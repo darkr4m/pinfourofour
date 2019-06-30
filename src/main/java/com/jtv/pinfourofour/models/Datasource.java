@@ -1,5 +1,6 @@
 package com.jtv.pinfourofour.models;
 
+import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
 
 import java.sql.*;
@@ -244,6 +245,27 @@ public class Datasource {
             }
             System.err.println("There is a pin with this ID already in the database: ");
             System.out.println(queryByPinID(pinID));
+            return false;
+        } catch (SQLException e){
+            System.out.println("Inserting pins failed.\n");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean insertPinBasic(JPin jPin){
+        try {
+            insertPinBasic.setString(1, jPin.getPinID());
+            insertPinBasic.setString(2, jPin.getBoard());
+            insertPinBasic.setString(3, jPin.getLink());
+            insertPinBasic.setString(4, jPin.getNote());
+            insertPinBasic.setString(5, "build");
+            if(queryByPinID(jPin.getPinID()) == null) {
+                insertPinBasic.execute();
+                return true;
+            }
+            System.err.println("There is a pin with this ID already in the database: ");
+            System.out.println(queryByPinID(jPin.getPinID()));
             return false;
         } catch (SQLException e){
             System.out.println("Inserting pins failed.\n");
