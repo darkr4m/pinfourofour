@@ -170,7 +170,18 @@ public class Datasource {
         }
     }
 
-    public List<JPinDatabaseDTO> queryByResponseCode(int code) {
+    public ResultSet getResultsByResponseCode(int code) {
+        try {
+            queryByResponseCode.setString(1, "%"+code+"%");
+            ResultSet results = queryByResponseCode.executeQuery();
+            return results;
+        } catch (SQLException e) {
+            System.err.println("Query failed:" + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<JPinDatabaseDTO> getDTOByResponseCode(int code) {
         try {
             queryByResponseCode.setString(1, "%"+code+"%");
             ResultSet results = queryByResponseCode.executeQuery();
