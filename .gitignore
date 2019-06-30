@@ -101,3 +101,5 @@ src/main/resources/
 *.config
 
 *.db
+
+*.properties
