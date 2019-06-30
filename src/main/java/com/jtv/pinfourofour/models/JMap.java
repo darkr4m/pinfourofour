@@ -55,14 +55,13 @@ public class JMap {
      * TODO: doc
      *
      * @param pinID
-     * @param creator
      * @param board
      * @param note
      * @param link
      * @return
      */
-    public static JPin createJPin(String pinID, String creator, String board, String note, String link){
-        JPin jPin = new JPin (pinID, creator, board, note, link);
+    public static JPin createJPin(String pinID, String board, String note, String link){
+        JPin jPin = new JPin (pinID, board, note, link);
         return jPin;
     }
 
@@ -140,7 +139,6 @@ public class JMap {
                 String pinID = record.get(PIN_ID);
                 String board = record.get (BOARD);
                 String link = record.get(LINK);
-                String creator = record.get (CREATOR);
                 String note = record.get(NOTE);
             }
         } catch (Exception e){
@@ -162,7 +160,7 @@ public class JMap {
         try(CSVPrinter printer = new CSVPrinter(new FileWriter (dir+File.separator+outfile), CSVFormat.DEFAULT.withHeader (CSVHeaders.class))){
             JPins.forEach ((k, v) -> {
                 try {
-                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getCreator (), v.getNote());
+                    printer.printRecord(v.getPinID(), v.getBoard(), v.getLink(), v.getNote());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
