@@ -39,7 +39,7 @@ object PinEndPointURIBuilder {
 
         if (isNotBlank(fields)) {
             uriBuilder.setParameter("fields", fields)
-            uriBuilder.setParameter("limit", "10")
+            uriBuilder.setParameter("limit", "100")
         }
 
 
