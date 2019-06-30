@@ -5,17 +5,18 @@ import com.jtv.pinfourofour.exceptions.PinterestException;
 import com.jtv.pinfourofour.fields.pin.PinFields;
 import com.jtv.pinfourofour.methods.network.ResponseMessageAndStatusCode;
 import com.jtv.pinfourofour.methods.pin.PinEndPointURIBuilder;
+import com.jtv.pinfourofour.models.Datasource;
 import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.pin.JPin;
+import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
 import com.jtv.pinfourofour.responses.pin.Pin;
 import com.jtv.pinfourofour.responses.pin.Pins;
+import com.jtv.pinfourofour.utils.builders.pin.JPinDatabaseDTOCreator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -25,59 +26,87 @@ import java.util.Properties;
  *
  */
 public class PinterestIO {
-    private static Pinterest pinterest;
+    //==================================================================
+    // CONSTANTS
+    //==================================================================
+    private static Datasource data = Datasource.getInstance();
+    private static Configuration configuration = Configuration.getInstance();
+    private static Pinterest pinterest = new Pinterest(configuration.getAccessToken());
     private Properties save = new Properties ();
     private String next;
 
+    private final String DIRECTORY = "save";
+    private final String FILENAME = "continue.properties";
+    private final String PATH = DIRECTORY+File.separator+FILENAME;
+
+    //==================================================================
+    // CONSTRUCTOR
+    //==================================================================
+
     public PinterestIO(){
-        Properties props = new Properties ();
-        try {
-            props.load (new BufferedReader (new FileReader ("config/pin.config")));
-            if(!props.getProperty ("access_token").isEmpty ()) {
-                pinterest = new Pinterest (props.getProperty ("access_token"));
-                System.out.println ("Pinterest connection opened with access token provided.");
-            } else {
-                System.out.println ("Access token not found. \nPlease ensure you have an access token set in pins.config.");
-                System.exit(0);
-            }
-        } catch (Exception e) {
-            e.printStackTrace ();
-            System.out.println ("Access token not found.");
-        }
+        data.open();
     }
 
-    public JMap getPins(Boolean cont){
-        ArrayList<Pins> pinsPage = new ArrayList<> ();
-        final String fileName = "save.properties";
+    //==================================================================
+    // GET PINS
+    //==================================================================
+
+    public boolean testGet(){
+        List<Pin> pinList = new ArrayList<>();
         try {
-            if (cont) {
-                if(!getContinueCursor ("myPins").isEmpty ()) PinEndPointURIBuilder.setCursor (getContinueCursor ("myPins"));
-            }
-
-            Pins pins = pinterest.getMyPins (new PinFields ().withAll ());
-            pinsPage.add (pins);
-            if(next != null) {
-                savePosition ("myPins", next, fileName);
-            } else {
-                savePosition ("myPins", "", fileName);
-                System.out.println ("Cursor reset. Operation finished");
-            }
-
+            Pins pins = pinterest.getMyPins(new PinFields().withAll());
+            pinList = pins.getPins();
             while (pinterest.getNextPageOfPins (pins.getNextPage ()) != null) {
                 pins = pinterest.getNextPageOfPins (pins.getNextPage ());
-                next = pins.getNextPage ().getNext ();
-                if (next != null) savePosition ("myPins", next, fileName);
-                System.out.println ("Pins requested: " + pinsPage + "\n"+ next);
-                pinsPage.add (pins);
+                pins.getPins().addAll(pinList);
+                if(pins.getNextPage() != null) {
+                    String cursor  = pins.getNextPage().getCursor();
+                    savePosition("myPins",cursor);
+                } else{
+                    savePosition("myPins","");
+                }
             }
-            System.out.println (pinsPage);
+            return saveToDB(pinList);
         } catch (PinterestException e) {
-//            e.printStackTrace ();
-            System.err.println (e.getMessage());
+            System.err.println("Currently rate limited by Pinterest: "+e.getMessage());
+            return saveToDB(pinList);
         }
-
-        return toJMap (pinsPage);
     }
+
+
+
+//    public JMap getPins(Boolean cont){
+//        ArrayList<Pins> pinsPage = new ArrayList<> ();
+//        final String fileName = "save.properties";
+//        try {
+//            if (cont) {
+//                if(!getContinueCursor ("myPins").isEmpty ()) PinEndPointURIBuilder.setCursor (getContinueCursor ("myPins"));
+//            }
+//
+//            Pins pins = pinterest.getMyPins (new PinFields ().withAll ());
+//            pinsPage.add (pins);
+//            if(next != null) {
+//                savePosition ("myPins", next, fileName);
+//            } else {
+//                savePosition ("myPins", "", fileName);
+//                System.out.println ("Cursor reset. Operation finished");
+//            }
+//
+//            while (pinterest.getNextPageOfPins (pins.getNextPage ()) != null) {
+//                pins = pinterest.getNextPageOfPins (pins.getNextPage ());
+//                next = pins.getNextPage ().getNext ();
+//                if (next != null) savePosition ("myPins", next, fileName);
+//                System.out.println ("Pins requested: " + pinsPage + "\n"+ next);
+//                pinsPage.add (pins);
+//            }
+//            System.out.println (pinsPage);
+//        } catch (PinterestException e) {
+////            e.printStackTrace ();
+//            System.err.println (e.getMessage());
+//        }
+//
+//        return toJMap (pinsPage);
+//    }
 
     /**
      * getMyPins
@@ -128,64 +157,127 @@ public class PinterestIO {
         return pinsPage;
     }
 
-    public void updatePin(String pinID, String board, String note, String link){
+    //==================================================================
+    // UPDATE PIN
+    //==================================================================
+    public boolean updatePin(JPinDatabaseDTO jPin){
+        if(pinterest != null) {
+            try {
+                ResponseMessageAndStatusCode response = pinterest.patchPin (jPin.getPinId(),jPin.getBoard(),jPin.getNote(), jPin.getLink());
+                if (response.getStatusCode () == 200) {
+                    System.out.println ("Pin " + jPin.getPinId() + " updated successfully. "+response.getMessage());
+                    return true;
+                } else {
+                    System.out.println ("Pin " + jPin.getPinId() + " not updated.");
+                    System.out.println (response);
+                    return false;
+                }
+            } catch (PinterestException e) {
+                System.out.println ("Error: Unable to update pin. Rate limited by Pinterest. "+e.getMessage ());
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean updatePin(String pinID, String link){
+        if(pinterest != null) {
+            try {
+                ResponseMessageAndStatusCode response = pinterest.patchPin (pinID,null,null, link);
+                if (response.getStatusCode () == 200) {
+                    System.out.println ("Pin " + pinID + " updated successfully. "+response.getMessage());
+                    return true;
+                } else {
+                    System.out.println ("Pin " + pinID + " not updated.");
+                    System.out.println (response);
+                    return false;
+                }
+            } catch (PinterestException e) {
+                System.out.println ("Error: Unable to update pin. Rate limited by Pinterest. "+e.getMessage ());
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public boolean updatePin(String pinID, String board, String note, String link){
         if(pinterest != null) {
             try {
                 ResponseMessageAndStatusCode response = pinterest.patchPin (pinID, board, note, link);
                 if (response.getStatusCode () == 200) {
-                    System.out.println ("Pin " + pinID + " updated successfully.");
-
+                    System.out.println ("Pin " + pinID + " updated successfully. "+response.getMessage());
+                    return true;
                 } else {
                     System.out.println ("Pin " + pinID + " not updated.");
                     System.out.println (response);
+                    return false;
                 }
             } catch (PinterestException e) {
-                System.out.println ("Unable to update pin. Rate limited by Pinterest.");
-                e.getMessage ();
+                System.out.println ("Error: Unable to update pin. Rate limited by Pinterest. "+e.getMessage ());
+                return false;
             }
         }
+        return false;
     }
-
-    public void deletePin(String pinID){
+    //==================================================================
+    // DELETE PIN
+    //==================================================================
+    public boolean deletePin(String pinID){
         if (pinterest !=null) {
             try {
                 boolean deleted = pinterest.deletePin (pinID);
                 if (deleted) {
                     System.out.println ("Pin " + pinID + " deleted sucessfully.");
+                    return true;
                 } else {
                     System.out.println ("Pin " + pinID + " not deleted.");
+                    return false;
                 }
             } catch (PinterestException e) {
                 System.out.println ("Unable to delete pin. Rate limited by Pinterest.");
                 e.getMessage ();
+                return false;
             }
         }
+        return false;
     }
+    //==================================================================
+    // SAVE FUNCTIONS
+    //==================================================================
 
+    public boolean saveToDB(List<Pin> pinList){
+        JPinDatabaseDTOCreator creator = new JPinDatabaseDTOCreator();
+        for (Pin pin : pinList){
+            JPin jPin = creator.createJPin(pin.getId(), pin.getBoard().getName(),pin.getOriginal_link(),pin.getNote());
+            if(!data.insertPinBasic(jPin)){
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**<b>toJMap</b>
      *
      * @param pinsPage
      * @return - JMap of jPins (Pin ID, JPin)
      */
-
-    public JMap toJMap(ArrayList<Pins> pinsPage) {
+    public JMap saveToJMap(ArrayList<Pins> pinsPage) {
+        JPinDatabaseDTOCreator creator = new JPinDatabaseDTOCreator();
         JMap jMap = new JMap ();
         for (Pins pinItems: pinsPage) {
             for (Pin pin: pinItems) {
-                JPin jPin = new JPin (pin.getId (), pin.getOriginal_link (), pin.getCreator ().getFirstName (), pin.getBoard ().getName (), pin.getNote ());
+                JPin jPin = creator.createJPin(pin.getId(), pin.getBoard().getName(),pin.getNote(),pin.getOriginal_link());
                 jMap.add (jPin);
             }
         }
         return jMap;
     }
 
-    public void savePosition(String method, String next, String fileName) {
+    public void savePosition(String method, String next) {
         try{
-            File saveDir = new File ("saves");
-            saveDir.mkdir ();
-            File saveFile = new File(saveDir,fileName);
-            if(!saveFile.exists ()) saveFile.createNewFile (); //Creates save file if it does not exist.
+            File dir = new File (DIRECTORY);
+            if(!dir.exists ()) dir.mkdir();
+            File saveFile = new File(PATH);
             save.setProperty (method, next);
             save.store (new FileOutputStream (saveFile.getAbsolutePath()), null);
         } catch (Exception e) {
@@ -218,6 +310,22 @@ public class PinterestIO {
         return cursor;
     }
 
-
+    public String getCursor(String method){
+        String cursor;
+        File saveFile = new File(PATH);
+        if(saveFile.exists()) {
+            try(FileReader reader = new  FileReader(saveFile.getAbsolutePath())){
+                save.load(reader);
+                return cursor = save.getProperty(method);
+            } catch (FileNotFoundException e){
+                System.err.println("Error: The save file could not be found. "+e.getMessage());
+                return null;
+            } catch (IOException e){
+                System.err.println("Error: Could not create save file: "+e.getMessage());
+                return null;
+            }
+        }
+        return null;
+    }
 
 }
