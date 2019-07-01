@@ -12,11 +12,11 @@ public class NetworkService {
     private int redirectLocationResponseCode;
     HttpURLConnection conn;
 
-    public NetworkService(String link){
-        this.link = link;
-    }
+//    public NetworkService(String link){
+//        this.link = link;
+//    }
 
-    public void execute(){
+    public void execute(String link){
         boolean redirect = false;
         try {
             connect (link);
