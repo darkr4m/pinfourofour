@@ -3,12 +3,14 @@ package com.jtv.pinfourofour.models;
 import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Datasource {
-    private static final String DB_NAME = "jpins.db";
+    static final File DIRECTORY = new File("data");
+    private static final String DB_NAME = "matsupins.db";
     private static final String CONNECTION_STRING = "jdbc:sqlite:" + DB_NAME;
     private static final String INTERNAL = "%www.jtv.com%";
 
@@ -25,17 +27,17 @@ public class Datasource {
     private static final String COLUMN_REDIRECT_LOCATION_RESPONSE_CODE = "redirect_location_response_code";
     private static final String COLUMN_ACTION = "action";
 
-    private static final String CREATE_IF_NO_EXIST = "CREATE TABLE IF NOT EXISTS "+TABLE_PINS+"("+
-            COLUMN_PIN_ID+" INTEGER NOT NULL UNIQUE, "+
-            COLUMN_BOARD+" TEXT NOT NULL, " +
-            COLUMN_LINK+" TEXT, " +
-            COLUMN_NOTE+" TEXT, " +
-            COLUMN_LINK_RESPONSE_CODE+" INTEGER, " +
-            COLUMN_REDIRECT_LOCATION+" TEXT, " +
-            COLUMN_REDIRECT_LOCATION_RESPONSE_CODE+" INTEGER, " +
-            COLUMN_ACTION+" TEXT, " +
-            "PRIMARY KEY(\""+COLUMN_PIN_ID+"\")" +
-            ")";
+//    private static final String CREATE_IF_NO_EXIST = "CREATE TABLE IF NOT EXISTS "+TABLE_PINS+"("+
+//            COLUMN_PIN_ID+" INTEGER NOT NULL UNIQUE, "+
+//            COLUMN_BOARD+" TEXT NOT NULL, " +
+//            COLUMN_LINK+" TEXT, " +
+//            COLUMN_NOTE+" TEXT, " +
+//            COLUMN_LINK_RESPONSE_CODE+" INTEGER, " +
+//            COLUMN_REDIRECT_LOCATION+" TEXT, " +
+//            COLUMN_REDIRECT_LOCATION_RESPONSE_CODE+" INTEGER, " +
+//            COLUMN_ACTION+" TEXT, " +
+//            "PRIMARY KEY(\""+COLUMN_PIN_ID+"\")" +
+//            ")";
 
     //==================================================================
     // PREPARED STATEMENTS
@@ -51,6 +53,8 @@ public class Datasource {
     private static final String UPDATE_PIN_BOARD_PREP = "UPDATE "+TABLE_PINS+" SET "+COLUMN_BOARD+"= ?"+" WHERE "+COLUMN_PIN_ID+"= ?";
     private static final String UPDATE_PIN_RESPONSES_PREP = "UPDATE "+TABLE_PINS+" SET "+COLUMN_LINK_RESPONSE_CODE+"= ?, "+COLUMN_REDIRECT_LOCATION+"= ?, "
             +COLUMN_REDIRECT_LOCATION_RESPONSE_CODE+"= ?" +" WHERE "+COLUMN_PIN_ID+"= ?";
+    private static final String UPDATE_ALL_PREP = "UPDATE "+TABLE_PINS+" SET "+COLUMN_BOARD+"= ?, "+COLUMN_LINK+"= ?, "+COLUMN_LINK_RESPONSE_CODE+"= ?, "+COLUMN_REDIRECT_LOCATION+"= ?, "
+            +COLUMN_REDIRECT_LOCATION_RESPONSE_CODE+"= ?, "+COLUMN_ACTION+"= ?" +" WHERE "+COLUMN_PIN_ID+"= ?";
     private static final String DELETE_PIN_PREP = "DELETE FROM "+TABLE_PINS+" WHERE "+COLUMN_PIN_ID+"= ?";
 
     //==================================================================
@@ -72,6 +76,7 @@ public class Datasource {
     private PreparedStatement queryByResponseCode;
     private PreparedStatement insertPinBasic;
     private PreparedStatement insertPinFull;
+    private PreparedStatement updateAll;
     private PreparedStatement updatePinLink;
     private PreparedStatement updatePinAction;
     private PreparedStatement updatePinBoard;
@@ -95,6 +100,7 @@ public class Datasource {
             queryByResponseCode = conn.prepareStatement(QUERY_TABLE_BY_RESPSONSE_PREP);
             insertPinBasic = conn.prepareStatement(INSERT_PIN_BASIC_PREP);
             insertPinFull = conn.prepareStatement(INSERT_PIN_FULL_PREP);
+            updateAll = conn.prepareStatement(UPDATE_ALL_PREP);
             updatePinLink = conn.prepareStatement(UPDATE_PIN_LINK_PREP);
             updatePinAction = conn.prepareStatement(UPDATE_PIN_ACTION_PREP);
             updatePinBoard = conn.prepareStatement(UPDATE_PIN_BOARD_PREP);
@@ -103,7 +109,6 @@ public class Datasource {
 
 //            boolean statement = conn.createStatement().execute(CREATE_IF_NO_EXIST);
 
-            System.out.println("Successfully established a database connection to " + DB_NAME + ".");
             return true;
         } catch (SQLException e) {
             System.err.println("Error - Could not establish a connection to the database " + DB_NAME + ": " + e.getMessage());
@@ -184,18 +189,7 @@ public class Datasource {
         }
     }
 
-    public ResultSet getResultsByResponseCode(int code) {
-        try {
-            queryByResponseCode.setString(1, "%"+code+"%");
-            ResultSet results = queryByResponseCode.executeQuery();
-            return results;
-        } catch (SQLException e) {
-            System.err.println("Query failed:" + e.getMessage());
-            return null;
-        }
-    }
-
-    public List<JPinDatabaseDTO> getDTOByResponseCode(int code) {
+    public List<JPinDatabaseDTO> queryByResponseCode(int code) {
         try {
             queryByResponseCode.setString(1, "%"+code+"%");
             ResultSet results = queryByResponseCode.executeQuery();
@@ -388,6 +382,28 @@ public class Datasource {
             updatePinResponses.setString(4, pinID);
             if(queryByPinID(pinID) != null) {
                 updatePinResponses.execute();
+                System.out.println("Sucessfully changed responses on pin "+pinID+".");
+                return true;
+            }
+            System.err.println("The pin with the ID "+pinID+" does not exist in the database.");
+            return false;
+        } catch (SQLException e){
+            System.out.println("Could not update pin: "+e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean updateAll(String board, String link, int linkResponseCode, String linkRedirectLocation, int linkRedirectionResponseCode, String action, String pinID){
+        try{
+            updateAll.setString(1, board);
+            updateAll.setString(2, link);
+            updateAll.setInt (3, linkResponseCode);
+            updateAll.setString(4, linkRedirectLocation);
+            updateAll.setInt(5, linkRedirectionResponseCode);
+            updateAll.setString(6, action);
+            updateAll.setString(7, pinID);
+            if(queryByPinID(pinID) != null) {
+                updateAll.execute();
                 System.out.println("Sucessfully changed responses on pin "+pinID+".");
                 return true;
             }

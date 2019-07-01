@@ -121,10 +121,7 @@ public class CommandMethods {
                     data.insertPinFull (dto);
                     added++;
                 } else { updated = 0;
-                data.updatePinLink (dto.getLink (), dto.getPinId ());
-                data.updatePinResponses (dto.getLinkResponseCode (), dto.getLinkRedirectLocation (), dto.getLinkRedirectionResponseCode (), dto.getPinId ());
-                data.updatePinBoard (dto.getBoard (), dto.getPinId ());
-                data.updatePinAction (dto.getAction (), dto.getPinId ());
+                data.updateAll (dto.getBoard (),dto.getLink (), dto.getLinkResponseCode (),dto.getLinkRedirectLocation (), dto.getLinkRedirectionResponseCode (), dto.getAction (), dto.getPinId ());
                 updated++;
                 }
         } else {
