@@ -2,11 +2,12 @@ package com.jtv.pinfourofour.utils.builders.pin;
 
 import com.jtv.pinfourofour.models.pin.JPinDTO;
 import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
+import com.jtv.pinfourofour.utils.Configuration;
 
 public class JPinDatabaseDTOBuilder implements JPinDTOBuilder {
+    private Configuration configuration = Configuration.getInstance ();
 
     private String pinID;
-    private String creator;
     private String board;
     private String link;
     private String note;
@@ -22,15 +23,10 @@ public class JPinDatabaseDTOBuilder implements JPinDTOBuilder {
         return this;
     }
 
-    @Override
-    public JPinDTOBuilder withCreator(String creator) {
-        this.creator = creator;
-        return this;
-    }
 
     @Override
     public JPinDTOBuilder withBoard(String board) {
-        this.board = board;
+        this.board = configuration.getUsername ()+"\\"+board.replaceAll ("[^A-Za-z0-9\\s]","").replaceAll (" ","-").toLowerCase ();
         return this;
     }
 
@@ -72,7 +68,7 @@ public class JPinDatabaseDTOBuilder implements JPinDTOBuilder {
 
     @Override
     public JPinDTO build() {
-        dto = new JPinDatabaseDTO(pinID, creator+"/"+board, link, note, linkResponseCode, linkRedirectLocation, linkRedirectLocationResponseCode, action);
+        dto = new JPinDatabaseDTO(pinID, board, link, note, linkResponseCode, linkRedirectLocation, linkRedirectLocationResponseCode, action);
         return dto;
     }
 

@@ -6,8 +6,6 @@ public interface JPinDTOBuilder {
 
     JPinDTOBuilder withPinID(String pinID);
 
-    JPinDTOBuilder withCreator(String creator);
-
     JPinDTOBuilder withBoard(String board);
 
     JPinDTOBuilder withLink(String link);
