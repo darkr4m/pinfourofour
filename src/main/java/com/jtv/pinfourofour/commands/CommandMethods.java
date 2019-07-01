@@ -13,10 +13,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class CommandMethods {
-    Configuration configuration = Configuration.getInstance();
-    Datasource data = Datasource.getInstance();
-    NetworkService nws = new NetworkService();
-    PinterestIO pio = new PinterestIO ();
+
+    private Configuration configuration = Configuration.getInstance();
+    private Datasource data = Datasource.getInstance();
+//    private NetworkService nws = new NetworkService();
+    private PinterestIO pio = new PinterestIO ();
+
+
     /**<b>rake</b>
      * Rake will attempt to connect to Pinterest and retrieve pins from the account associated with the access token provided under “My Pins.”
      *
@@ -37,7 +40,9 @@ public class CommandMethods {
             dtoList = data.queryAllPins();
         }
         for (JPinDatabaseDTO dto : dtoList){
+            NetworkService nws = new NetworkService();
             nws.execute(dto.getLink());
+            data.updatePinResponses(nws.getLinkResponseCode(),nws.getRedirectLocation(),nws.getRedirectLocationResponseCode(),dto.getPinId());
         }
     }
 

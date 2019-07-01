@@ -7,7 +7,7 @@ import com.jtv.pinfourofour.utils.services.NetworkService;
 
 public final class JPinDatabaseDTOCreator {
     private static Configuration configuration = Configuration.getInstance();
-    private static NetworkService nws = new NetworkService ();
+//    private static NetworkService nws = new NetworkService ();
 
 
     public static JPin createJPin(String pinID, String link, String board, String note ){
@@ -16,6 +16,7 @@ public final class JPinDatabaseDTOCreator {
     }
 
     public static JPinDTO buildDTODirector(JPinDTOBuilder builder, JPin jPin){
+        NetworkService nws = new NetworkService();
         nws.execute (jPin.getLink());
         return builder.withPinID (jPin.getPinID ()).withCreator (configuration.getUsername()).withBoard (jPin.getBoard ())
                 .withLink (jPin.getLink ())

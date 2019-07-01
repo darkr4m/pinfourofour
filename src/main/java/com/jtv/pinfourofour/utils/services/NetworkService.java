@@ -6,15 +6,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class NetworkService {
-    private String link;
     private int linkResponseCode;
     private String redirectLocation;
     private int redirectLocationResponseCode;
     HttpURLConnection conn;
-
-//    public NetworkService(String link){
-//        this.link = link;
-//    }
 
     public void execute(String link){
         boolean redirect = false;
