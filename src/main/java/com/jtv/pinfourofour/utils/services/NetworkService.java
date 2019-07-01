@@ -9,7 +9,7 @@ public class NetworkService {
     private int linkResponseCode;
     private String redirectLocation;
     private int redirectLocationResponseCode;
-    HttpURLConnection conn;
+    private HttpURLConnection conn;
 
     public void execute(String link){
         boolean redirect = false;
@@ -17,6 +17,7 @@ public class NetworkService {
             connect (link);
             if(conn.getResponseCode () == HttpURLConnection.HTTP_OK){
                 linkResponseCode = 200;
+                System.out.println ("=================== URL Check Complete ===================");
                 System.out.println("Request URL ... " + link + " Status:" + linkResponseCode );
             }
             if (conn.getResponseCode () != HttpURLConnection.HTTP_OK) {
@@ -40,8 +41,8 @@ public class NetworkService {
                 conn.disconnect ();
             }
         } catch (MalformedURLException e) {
-            System.err.println("=================== URL Check Complete ===================");
-            System.err.println("Bad url. Cannot check this link. "+e.getMessage());
+            System.err.println("\n=================== URL Check Complete ===================");
+            System.err.println("Bad url. Cannot check this link. "+e.getMessage()+"\n");
         } catch (IOException e){
             System.err.println(e.getMessage());
         }
