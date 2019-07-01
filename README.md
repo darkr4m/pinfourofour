@@ -8,7 +8,7 @@ An internal Pinterest management tool. Designed to automate the process of updat
 - Check Links for their HTTP Response code.
 - Generates Reports on Problem Pins.
 
-**Data is stored in CSV format and can be viewed in any spreadsheet program.**<br>
+**Data is stored in an SQLite database and can be exported to CSV format and can be viewed in any spreadsheet program.**<br>
  _Ensure that the data is saved in the same format!_ <br>
 CSV warnings
 
@@ -21,19 +21,31 @@ On first and subsequent uses, the application will create and modify subdirector
 **Configuration file found in  config/pin.config** <br>
 #### Pinterest - <br>
 **Access_token** - The access token to be used while performing any actions with the Pinterest API _**(REQUIRED)**_ <br>
-**Username** - Your pinterest username. Will be used if you want to filter through pins that were not created by you. _**(REQUIRED)**_
+**Use Postman to obtain an access token for this app. <br>
+More information here:** https://developers.pinterest.com/docs/api/overview/ <br><br>
+**Username** - Your pinterest username. _**(REQUIRED)**_<br>
+<img src="https://i.imgur.com/k7mvH1n.png" title="source: imgur.com" />
 
-Make sure your access token is correct and saved in config/pin.config. <br>
+Make sure your access token and username are correct and saved in config/pin.config. <br>
 If the config directory does not exist, it can be found after the program runs for the first time.
+See the command summary for usage details.
 
-### Commands
+## Commands
+### Command Line Syntax Example
 java -jar pin404.jar command -p --parameters=pins.csv
 
-#### config 
- - config -t --token=(access token) -u --username=(username)
+### config 
+_Used by the application for Pinterest connectivity_ **See configuration section**
+ - options: <br>
+ -t --token=(access token) <br> 
+ -u --username=(username) <br>
+ **Example** - java -jar pin404.jar config -t=2637891hkwejrh2917319312 -u=max
  
-#### rake
- - rake -c --continue (continue from last rake <t/f> default false)
+### rake
+_Retrieve the **authenticated user's** pins. The owner of the access token set up in configuration is considered the authenticated user._ <br>
+ - rake -c --continue (<t/f> default false)
+ - options: <br>
+ -c --continue (continue from last rake) **Not quite supported yet. Use at own risk**<br>
  
 #### check
  - check -f --filter (filter external <t/f> default false)
