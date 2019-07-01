@@ -25,6 +25,18 @@ public class Datasource {
     private static final String COLUMN_REDIRECT_LOCATION_RESPONSE_CODE = "redirect_location_response_code";
     private static final String COLUMN_ACTION = "action";
 
+    private static final String CREATE_IF_NO_EXIST = "CREATE TABLE IF NOT EXISTS "+TABLE_PINS+"("+
+            COLUMN_PIN_ID+" INTEGER NOT NULL UNIQUE, "+
+            COLUMN_BOARD+" TEXT NOT NULL, " +
+            COLUMN_LINK+" TEXT, " +
+            COLUMN_NOTE+" TEXT, " +
+            COLUMN_LINK_RESPONSE_CODE+" INTEGER, " +
+            COLUMN_REDIRECT_LOCATION+" TEXT, " +
+            COLUMN_REDIRECT_LOCATION_RESPONSE_CODE+" INTEGER, " +
+            COLUMN_ACTION+" TEXT, " +
+            "PRIMARY KEY(\""+COLUMN_PIN_ID+"\")" +
+            ")";
+
     //==================================================================
     // PREPARED STATEMENTS
     //==================================================================
@@ -88,6 +100,8 @@ public class Datasource {
             updatePinBoard = conn.prepareStatement(UPDATE_PIN_BOARD_PREP);
             updatePinResponses = conn.prepareStatement(UPDATE_PIN_RESPONSES_PREP);
             deletePin = conn.prepareStatement(DELETE_PIN_PREP);
+
+//            boolean statement = conn.createStatement().execute(CREATE_IF_NO_EXIST);
 
             System.out.println("Successfully established a database connection to " + DB_NAME + ".");
             return true;
