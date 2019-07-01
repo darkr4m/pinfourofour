@@ -307,6 +307,25 @@ public class Datasource {
         }
     }
 
+    public boolean insertPinFull(JPinDatabaseDTO dto){
+        try {
+            insertPinFull.setString(1, dto.getPinId ());
+            insertPinFull.setString(2, dto.getBoard ());
+            insertPinFull.setString(3, dto.getLink ());
+            insertPinFull.setString(4, dto.getNote ());
+            insertPinFull.setInt(5, dto.getLinkResponseCode ());
+            insertPinFull.setString(6, dto.getLinkRedirectLocation ());
+            insertPinFull.setInt(7, dto.getLinkRedirectionResponseCode ());
+            insertPinFull.setString(8, dto.getAction ());
+            insertPinFull.execute();
+            return true;
+
+        } catch (SQLException e){
+            System.out.println("Inserting pins failed: " +e.getMessage());
+            return false;
+        }
+    }
+
     //==================================================================
     // UPDATE
     //==================================================================

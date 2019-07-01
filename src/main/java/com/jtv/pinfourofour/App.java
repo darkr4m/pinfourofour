@@ -22,12 +22,13 @@ public class App {
             System.out.println("Could not establish a connection to the database.");
             return;
         }
-        String[] argv = {"report", "-f=allPins"};
+        String[] argv = {"import", "-f=allPins.csv"};
         App app = new App();
         ConfigCommand config = new ConfigCommand();
         RakeCommand rake = new RakeCommand ();
         StatusCommand status = new StatusCommand();
         UpdateCommand update = new UpdateCommand();
+        ImportCommand imprt = new ImportCommand ();
         ReportCommand report = new ReportCommand ();
         RemoveCommand remove = new RemoveCommand();
         JCommander jc = JCommander.newBuilder()
@@ -35,8 +36,9 @@ public class App {
                 .addCommand("config", config)
                 .addCommand ("rake", rake)
                 .addCommand ("status",status)
-                .addCommand("remove", remove)
+                .addCommand ("import", imprt)
                 .addCommand ("report", report)
+                .addCommand("remove", remove)
                 .addCommand("update", update)
                 .build();
         try {
@@ -59,6 +61,9 @@ public class App {
                     break;
                 case "update":
                     cmds.updatePins(update.fileName);
+                    break;
+                case "import":
+                    cmds.importCSVToDatabase (imprt.fileName);
                     break;
                 case "report":
                     cmds.report (report.fileName);

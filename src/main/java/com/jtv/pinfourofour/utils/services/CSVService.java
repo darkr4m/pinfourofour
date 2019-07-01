@@ -48,14 +48,14 @@ public class CSVService {
                 for (CSVRecord record : records) {
                     String pinID = record.get(PIN_ID);
                     pinID = pinID.substring(0,17); //removes the char at the end.
-                    String link = record.get(LINK);
                     String board = record.get(BOARD);
+                    String link = record.get(LINK);
                     String note = record.get(NOTE);
                     int linkResponseCode = Integer.parseInt(record.get(LINK_RESPONSE_CODE));
                     String linkRedirectLocation = record.get(LINK_REDIRECT_LOCATION);
                     int redirectLocationResponseCode = Integer.parseInt(record.get(LINK_REDIRECT_RESPONSE_CODE));
                     String action = record.get(ACTION);
-                    JPinDatabaseDTO dto = new JPinDatabaseDTO(pinID,link,board,note,linkResponseCode,linkRedirectLocation,redirectLocationResponseCode,action);
+                    JPinDatabaseDTO dto = new JPinDatabaseDTO(pinID,board,link,note,linkResponseCode,linkRedirectLocation,redirectLocationResponseCode,action);
                     JPins.add(dto);
                 }
             }
