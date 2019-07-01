@@ -2,7 +2,6 @@ package com.jtv.pinfourofour.models;
 
 import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDTO;
-import com.jtv.pinfourofour.utils.builders.pin.JPinDTOBuilder;
 import com.jtv.pinfourofour.utils.services.NetworkService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;

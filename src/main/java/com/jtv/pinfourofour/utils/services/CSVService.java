@@ -1,5 +1,6 @@
 package com.jtv.pinfourofour.utils.services;
 
+import com.jtv.pinfourofour.models.CSVHeaders;
 import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
@@ -46,6 +47,7 @@ public class CSVService {
                 Iterable<CSVRecord> records = format.parse(readFile(fileName));
                 for (CSVRecord record : records) {
                     String pinID = record.get(PIN_ID);
+                    pinID = pinID.substring(0,17); //removes the char at the end.
                     String link = record.get(LINK);
                     String board = record.get(BOARD);
                     String note = record.get(NOTE);
@@ -66,11 +68,21 @@ public class CSVService {
 
     /**
      * <b>csvExport</b>
-     * Exports the JPins from a query result to a CSV file.
+     * Exports the JPins from a list obtained from a query result to a CSV file.
      */
-    public boolean csvExport(String fileName, ResultSet results) {
-        try (CSVPrinter printer = CSVFormat.DEFAULT.withHeader(results).withAutoFlush(true).print(new FileWriter(fileName))) {
-            printer.printRecord(results);
+    public boolean csvExport(String fileName, List<JPinDatabaseDTO> dtoList) {
+        try (CSVPrinter printer = CSVFormat.DEFAULT.withHeader(CSVHeaders.class)
+                .withIgnoreHeaderCase(true)
+                .withAllowMissingColumnNames(true)
+                .withAutoFlush(true)
+                .print(new FileWriter(fileName))) {
+
+            for(JPinDatabaseDTO dto : dtoList){
+                printer.printRecord(dto.getPinId()+"p",
+                        dto.getBoard(), dto.getLink(), dto.getNote(), dto.getLinkResponseCode(),
+                        dto.getLinkRedirectLocation(), dto.getLinkRedirectionResponseCode(), dto.getAction());
+                printer.flush();
+            }
             return true;
         } catch (Exception e) {
             System.out.println("Could not write results to file: " + e.getMessage());
