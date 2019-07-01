@@ -4,8 +4,8 @@ import com.beust.jcommander.JCommander;
 
 import com.beust.jcommander.ParameterException;
 import com.jtv.pinfourofour.models.Datasource;
-import com.jtv.pinfourofour.utils.Configuration;
 import com.jtv.pinfourofour.commands.*;
+import com.jtv.pinfourofour.utils.services.NetworkService;
 
 /** Pin404
  *  An internal application for Pinterest Pin management.
@@ -15,8 +15,6 @@ import com.jtv.pinfourofour.commands.*;
  *  Generating access tokens is not supported in this application.
  */
 public class App {
-    private static Configuration configuration = Configuration.getInstance();
-
     public static void main( String[] args ) {
         Datasource data = Datasource.getInstance();
         CommandMethods cmds = new CommandMethods();
@@ -45,7 +43,7 @@ public class App {
             System.out.println(e.getMessage());
             e.usage();
         }
-        boolean command = !(jc.getParsedCommand() == null);
+        boolean command = (jc.getParsedCommand() != null);
         if(command) {
             switch (jc.getParsedCommand()) {
                 case "config":
@@ -68,7 +66,6 @@ public class App {
                     jc.usage();
             }
         }
-
         data.close();
     }
 }
