@@ -103,3 +103,5 @@ src/main/resources/
 *.db
 
 *.properties
+
+*.csv
