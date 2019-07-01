@@ -22,7 +22,7 @@ public class App {
             System.out.println("Could not establish a connection to the database.");
             return;
         }
-        String[] argv = {"import", "-f=allPins.csv"};
+        String[] argv = {"remove", "-f=samples.csv"};
         App app = new App();
         ConfigCommand config = new ConfigCommand();
         RakeCommand rake = new RakeCommand ();
@@ -54,7 +54,7 @@ public class App {
                     cmds.configure(config.access_token, config.username);
                     break;
                 case "rake":
-                    cmds.rake(rake.cont);
+                    cmds.rake();
                     break;
                 case "status":
                     cmds.status(status.filterExternal);
@@ -72,7 +72,7 @@ public class App {
                     cmds.removePins(remove.fileName);
                     break;
                 default:
-                    System.out.println("Nope. This command is not supported.");
+                    System.err.println("This command is not supported.");
                     jc.usage();
             }
         }

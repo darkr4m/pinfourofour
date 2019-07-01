@@ -51,7 +51,7 @@ public class PinterestIO {
     // GET PINS
     //==================================================================
 
-    public ArrayList<Pins> testGet(){
+    public ArrayList<Pins> getMyPinsCont(){
         ArrayList<Pins> pinsPage = new ArrayList<> ();
         try {
             Pins pins = pinterest.getMyPins(new PinFields().withAll());
@@ -247,6 +247,7 @@ public class PinterestIO {
                 if (data.queryByPinID(pin.getId()) == null) {
                     JPin jPin = creator.createJPin(pin.getId(), pin.getBoard().getName(), pin.getOriginal_link(), pin.getNote());
                     data.insertPinBasic(jPin);
+                    if(data.queryByPinID (pin.getId ())==null) data.updatePinAction ("build",pin.getId ());
                 }
             }
         }

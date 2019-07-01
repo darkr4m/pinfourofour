@@ -4,12 +4,14 @@ import com.jtv.pinfourofour.models.Datasource;
 import com.jtv.pinfourofour.models.JMap;
 import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
+import com.jtv.pinfourofour.responses.pin.Pins;
 import com.jtv.pinfourofour.utils.Configuration;
 import com.jtv.pinfourofour.utils.PinterestIO;
 import com.jtv.pinfourofour.utils.services.CSVService;
 import com.jtv.pinfourofour.utils.services.NetworkService;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -27,14 +29,10 @@ public class CommandMethods {
     /**
      * <b>rake</b>
      * Rake will attempt to connect to Pinterest and retrieve pins from the account associated with the access token provided under “My Pins.”
-     *
-     * @param cont - Boolean, a flag indicating that the user wishes to continue from a save point.
      */
-    public void rake(Boolean cont) {
-        PinterestIO pio = new PinterestIO ();
-        JMap jMap = pio.getPins (cont);
-        jMap.csvExport ("pins" + File.separator + "rake", "rake");
-        System.out.println (jMap.count () + " pin(s) raked. Output file found in pins/rake.");
+    public void rake() {
+        ArrayList<Pins> pins = pio.getMyPinsCont ();
+        pio.saveToDB (pins);
     }
 
     public void status(boolean filterExternal) {
@@ -52,13 +50,22 @@ public class CommandMethods {
     }
 
     public void removePins(String fileName) {
-        JMap jMap = new JMap ();
-        jMap.csvImport (fileName);
-        LinkedHashMap<String, JPin> JPins = jMap.getJPins ();
-        JPins.forEach ((k, v) -> {
-                    pio.deletePin (k);
+        boolean deleted;
+        List<JPinDatabaseDTO> dtoList = csv.importFromCSV (fileName);
+        System.err.println ("Warning: Existing pins will be removed. This change is considered destructive and is final.");
+        System.out.println ("Pins will be removed from Pinterest and from the database. Continue? [Y/n]: ");
+        String answer = sc.nextLine ();
+
+        if (answer.toLowerCase ().equals ("y")) {
+            for (JPinDatabaseDTO dto : dtoList) {
+                if (dto.getAction ().toLowerCase ().equals ("remove") && dto.getAction () != null) {
+                    deleted = pio.deletePin (dto.getPinId ());
+                    if (deleted) if (data.queryByPinID (dto.getPinId ()) != null) data.deletePin (dto.getPinId ());
                 }
-        );
+            }
+        } else {
+            System.out.println ("Aborted.");
+        }
     }
 
     /**
@@ -112,21 +119,22 @@ public class CommandMethods {
                 updated++;
             }
         System.err.println ("Warning: Existing pins will updated. This change is considered destructive and is final.");
-        System.out.println("There are "+added+" new pins that can be inserted and "+updated+" pins that will be updated. Continue? [Y/n]: ");
+        System.out.println ("There are " + added + " new pins that can be inserted and " + updated + " pins that will be updated. Continue? [Y/n]: ");
         String answer = sc.nextLine ();
-        if(answer.toLowerCase ().equals ("y")){
+        if (answer.toLowerCase ().equals ("y")) {
             for (JPinDatabaseDTO dto : dtoList)
                 if (data.queryByPinID (dto.getPinId ()) == null) {
                     added = 0;
                     data.insertPinFull (dto);
                     added++;
-                } else { updated = 0;
-                data.updateAll (dto.getBoard (),dto.getLink (), dto.getLinkResponseCode (),dto.getLinkRedirectLocation (), dto.getLinkRedirectionResponseCode (), dto.getAction (), dto.getPinId ());
-                updated++;
+                } else {
+                    updated = 0;
+                    data.updateAll (dto.getBoard (), dto.getLink (), dto.getLinkResponseCode (), dto.getLinkRedirectLocation (), dto.getLinkRedirectionResponseCode (), dto.getAction (), dto.getPinId ());
+                    updated++;
                 }
         } else {
             System.out.println ("Aborted.");
         }
-        }
     }
+}
 
