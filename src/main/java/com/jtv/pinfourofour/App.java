@@ -22,12 +22,13 @@ public class App {
             System.out.println("Could not establish a connection to the database.");
             return;
         }
-        String[] argv = {"status"};
+        String[] argv = {"report", "-f=allPins"};
         App app = new App();
         ConfigCommand config = new ConfigCommand();
         RakeCommand rake = new RakeCommand ();
         StatusCommand status = new StatusCommand();
         UpdateCommand update = new UpdateCommand();
+        ReportCommand report = new ReportCommand ();
         RemoveCommand remove = new RemoveCommand();
         JCommander jc = JCommander.newBuilder()
                 .addObject(app)
@@ -35,6 +36,7 @@ public class App {
                 .addCommand ("rake", rake)
                 .addCommand ("status",status)
                 .addCommand("remove", remove)
+                .addCommand ("report", report)
                 .addCommand("update", update)
                 .build();
         try {
@@ -58,6 +60,9 @@ public class App {
                 case "update":
                     cmds.updatePins(update.fileName);
                     break;
+                case "report":
+                    cmds.report (report.fileName);
+                    break;
                 case "remove":
                     cmds.removePins(remove.fileName);
                     break;
@@ -66,6 +71,7 @@ public class App {
                     jc.usage();
             }
         }
+
         data.close();
     }
 }

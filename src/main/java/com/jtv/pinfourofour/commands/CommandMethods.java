@@ -6,6 +6,7 @@ import com.jtv.pinfourofour.models.pin.JPin;
 import com.jtv.pinfourofour.models.pin.JPinDatabaseDTO;
 import com.jtv.pinfourofour.utils.Configuration;
 import com.jtv.pinfourofour.utils.PinterestIO;
+import com.jtv.pinfourofour.utils.services.CSVService;
 import com.jtv.pinfourofour.utils.services.NetworkService;
 
 import java.io.File;
@@ -18,6 +19,7 @@ public class CommandMethods {
     private Datasource data = Datasource.getInstance();
 //    private NetworkService nws = new NetworkService();
     private PinterestIO pio = new PinterestIO ();
+    CSVService csv = new CSVService ();
 
 
     /**<b>rake</b>
@@ -86,5 +88,12 @@ public class CommandMethods {
             System.out.println("Username set to "+username+" successfully.");
         }
     }
+
+    public void report(String fileName){
+        List<JPinDatabaseDTO> dtoList = data.queryAllPins ();
+        boolean exported = csv.csvExport (fileName+".csv",dtoList);
+        if(exported) System.out.println ("Report successfully generated: "+fileName+".csv");
+    }
+    
 
 }
