@@ -123,6 +123,7 @@ public class Datasource {
             if(queryByResponseCode != null) queryByResponseCode.close();
             if(insertPinBasic != null) insertPinBasic.close();
             if(insertPinFull != null) insertPinFull.close();
+            if(updateAll != null) updateAll.close();
             if(updatePinLink != null) updatePinLink.close();
             if(updatePinAction != null) updatePinAction.close();
             if(updatePinBoard != null) updatePinBoard.close();

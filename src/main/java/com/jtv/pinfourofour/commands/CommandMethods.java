@@ -20,7 +20,6 @@ public class CommandMethods {
 
     private Configuration configuration = Configuration.getInstance ();
     private Datasource data = Datasource.getInstance ();
-    //    private NetworkService nws = new NetworkService();
     private PinterestIO pio = new PinterestIO ();
     private CSVService csv = new CSVService ();
     private Scanner sc = new Scanner (System.in);
@@ -52,7 +51,7 @@ public class CommandMethods {
     public void removePins(String fileName) {
         boolean deleted;
         List<JPinDatabaseDTO> dtoList = csv.importFromCSV (fileName);
-        System.err.println ("Warning: Existing pins will be removed. This change is considered destructive and is final.");
+        System.out.println ("Warning: Existing pins will be removed. This change is considered destructive and is final.");
         System.out.println ("Pins will be removed from Pinterest and from the database. Continue? [Y/n]: ");
         String answer = sc.nextLine ();
 
@@ -75,13 +74,29 @@ public class CommandMethods {
      * @param fileName - String, the exact path of the CSV file containing pin information to update.
      */
     public void updatePins(String fileName) {
-        JMap jMap = new JMap ();
-        jMap.csvImport (fileName);
-        LinkedHashMap<String, JPin> JPins = jMap.getJPins ();
-        JPins.forEach ((k, v) -> {
-                    pio.updatePin (k, "", v.getNote (), v.getLink ());
+        boolean updated;
+        List<JPinDatabaseDTO> dtoList = csv.importFromCSV (fileName);
+        System.out.println ("Warning: Existing pins will updated. This change is considered destructive and is final. ");
+        System.out.println ("Pins will be updated on Pinterest and in the database. Continue? [Y/n]: ");
+        String answer = sc.nextLine ();
+        if (answer.toLowerCase ().equals ("y")) {
+            for (JPinDatabaseDTO dto : dtoList) {
+                if (dto.getAction ().toLowerCase ().equals ("update") && dto.getAction () != null) {
+                    updated = pio.updatePin (dto.getPinId (), dto.getLink ());
+                    if (updated) {
+                        if (data.queryByPinID (dto.getPinId ()) != null) {
+                            data.updatePinLink (dto.getLink (), dto.getPinId ());
+                        } else {
+                            System.out.println ("Pin not found in the database. Adding.");
+                            data.insertPinFull (dto);
+                        }
+                    }
                 }
-        );
+            }
+        } else {
+            System.out.println ("Aborted.");
+        }
+
     }
 
     /**
@@ -118,7 +133,7 @@ public class CommandMethods {
             } else {
                 updated++;
             }
-        System.err.println ("Warning: Existing pins will updated. This change is considered destructive and is final.");
+        System.out.println ("Warning: Existing pins will updated. This change is considered destructive and is final.");
         System.out.println ("There are " + added + " new pins that can be inserted and " + updated + " pins that will be updated. Continue? [Y/n]: ");
         String answer = sc.nextLine ();
         if (answer.toLowerCase ().equals ("y")) {

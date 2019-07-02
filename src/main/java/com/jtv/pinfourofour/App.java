@@ -22,7 +22,7 @@ public class App {
             System.out.println("Could not establish a connection to the database.");
             return;
         }
-        String[] argv = {"remove", "-f=samples.csv"};
+//        String[] argv = {};
         App app = new App();
         ConfigCommand config = new ConfigCommand();
         RakeCommand rake = new RakeCommand ();
@@ -42,7 +42,7 @@ public class App {
                 .addCommand("update", update)
                 .build();
         try {
-            jc.parse(argv);
+            jc.parse(args);
         } catch (ParameterException e){
             System.out.println(e.getMessage());
             e.usage();
