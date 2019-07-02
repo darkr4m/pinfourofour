@@ -27,14 +27,20 @@ An internal Pinterest management tool. Designed to automate the process of updat
  **HACK:**(If you need a template)<br>
  Copy and paste the above string into a new text file and save it as .csv.
 
-## Usage
+## Configuration
 
-The pin404.jar is meant to stay inside of it's dedicated containing directory. Please keep it there. You can move the directory around as you please.<br>
-On first and subsequent uses, the application will create and modify subdirectories and files needed for operation.
-
-### Configuration
 **Configuration file found in  config/pin.config** <br>
-#### Pinterest - <br>
+On first and subsequent uses, the application will create and modify subdirectories and files needed for operation. <br>
+_The pin404.jar is meant to stay inside of it's dedicated containing directory. Please keep it there. You can move the directory around as you please._<br>
+
+### CSV Hard Requirements
+ **Column headers are required and must be set in _this_ order:**<br> (not case sensitive)
+ PIN_ID, BOARD, LINK, NOTE, LINK_RESPONSE_CODE, LINK_REDIRECT_LOCATION, LINK_REDIRECT_RESPONSE_CODE, ACTION <br>
+ 
+ **HACK:**(If you need a template)<br>
+ Copy and paste the above string into a new text file and save it as .csv.
+
+### Pinterest - <br>
 **Access_token** - The access token to be used while performing any actions with the Pinterest API _**(REQUIRED)**_ <br>
 **Use Postman to obtain an access token for this app. <br>
 More information here:** https://developers.pinterest.com/docs/api/overview/ <br><br>
@@ -45,31 +51,53 @@ Make sure your access token and username are correct and saved in config/pin.con
 If the config directory does not exist, it can be found after the program runs for the first time.
 See the command summary for usage details.
 
-## Commands
+## Usage and Commands
+
 ### Command Line Syntax Example
 java -jar pin404.jar command -p --parameters=pins.csv
 
 Supports the @ syntax, which allows you to put all your options into a file.txt and pass the file as parameter:<br>
 <img src="https://i.imgur.com/N3A2neK.png?1" title="source: imgur.com" />
 
-### config 
+#### config 
 _Used by the application for Pinterest connectivity_ **See configuration section**
  - options: <br>
     t --token=(access token) <br> 
     u --username=(username) <br>
- **Example** - java -jar pin404.jar config -t=2637891hkwejrh2917319312 -u=max
+    **Example** - java -jar pin404.jar config -t=2637891hkwejrh2917319312 -u=max
  
-### rake
+#### rake
 _Retrieve the **authenticated user's** pins. The owner of the access token set up in configuration is considered the authenticated user._ <br>
- - rake -c --continue (<t/f> default false)
  - options: <br>
- -c --continue (continue from last rake) **Not quite supported yet. Use at own risk**<br>
+    c --continue (continue from last rake) (<t/f> default false) <br>
+    **Example** - java -jar pin404.jar rake -c <br>
  
-#### check
- - check -f --filter (filter external <t/f> default false)
+#### status
+_Returns the HTTP/S URL Status Codes of the link on the pin. Checks for redirect location and redirect location response code._<br>
+- options: <br>
+   -f --filter (filter external links <t/f> default false)<br>
+   **Example** - java -jar pin404.jar status --filter <br>
+   
+#### report 
+_Generates a report in the format of a CSV file. The file will be located in the **same directory as the .jar file.**_<br>
+- options: <br>
+  _None_
+**Example** - java -jar pin404.jar report
+
+#### import 
+_Imports data from a CSV file to the database. **See above for CSV header requirements.**_<br>
+- options: <br>
+   -f=<filename.csv> <br>
+   **Example** - java -jar pin404.jar import -f=samples.csv
  
 #### update
- - update -f=<filename.csv> 
+_Updates the specified field names on Pinterest and in the database that is located in a local CSV file._<br>
+- options: <br>
+   -f=<filename.csv> <br>
+   **Example** - java -jar pin404.jar update -f=samples.txt<br>
  
 #### remove
- - remove -f=<filename.csv>
+_Removes the specified pin referenced by **PIN ID** on Pinterest and in the database that is located in a local CSV file._<br>
+- options: <br>
+   -f=<filename.csv>
+   **Example** - java -jar pin404.jar remove -f=samples.csv<br>
