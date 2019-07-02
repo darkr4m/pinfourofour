@@ -11,7 +11,7 @@ import com.beust.jcommander.Parameters;
 public class ReportCommand {
     @Parameter(
             names = {"-f", "--filename"},
-            description = "File that contains the pin data to remove.",
+            description = "The name of the file to name the report.",
             required = true
     )
     public String fileName;

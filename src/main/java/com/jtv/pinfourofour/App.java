@@ -75,6 +75,8 @@ public class App {
                     System.err.println("This command is not supported.");
                     jc.usage();
             }
+        } else {
+            jc.usage ();
         }
 
         data.close();

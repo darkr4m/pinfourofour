@@ -5,13 +5,13 @@ import com.beust.jcommander.Parameters;
 
 @Parameters(
         commandNames = "import",
-        commandDescription = "Removes pins from Pinterest.",
+        commandDescription = "Imports data from a CSV file to the database. Ensure your headers are correct!",
         separators = "="
 )
 public class ImportCommand {
     @Parameter(
             names = {"-f", "--filename"},
-            description = "File that contains the pin data to remove.",
+            description = "CSV File that contains the pin data to import.",
             required = true
     )
     public String fileName;
