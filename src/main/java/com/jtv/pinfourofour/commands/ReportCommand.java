@@ -11,8 +11,7 @@ import com.beust.jcommander.Parameters;
 public class ReportCommand {
     @Parameter(
             names = {"-f", "--filename"},
-            description = "The name of the file to name the report.",
-            required = true
+            description = "The name of the file to name the report."
     )
     public String fileName;
 }

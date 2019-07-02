@@ -22,7 +22,7 @@ public class App {
             System.out.println("Could not establish a connection to the database.");
             return;
         }
-//        String[] argv = {};
+        String[] argv = {"report"};
         App app = new App();
         ConfigCommand config = new ConfigCommand();
         RakeCommand rake = new RakeCommand ();
@@ -42,7 +42,7 @@ public class App {
                 .addCommand("update", update)
                 .build();
         try {
-            jc.parse(args);
+            jc.parse(argv);
         } catch (ParameterException e){
             System.out.println(e.getMessage());
             e.usage();
@@ -66,7 +66,7 @@ public class App {
                     cmds.importCSVToDatabase (imprt.fileName);
                     break;
                 case "report":
-                    cmds.report (report.fileName);
+                    cmds.report ();
                     break;
                 case "remove":
                     cmds.removePins(remove.fileName);

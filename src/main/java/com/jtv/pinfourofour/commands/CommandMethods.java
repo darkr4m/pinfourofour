@@ -11,6 +11,8 @@ import com.jtv.pinfourofour.utils.services.CSVService;
 import com.jtv.pinfourofour.utils.services.NetworkService;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -117,10 +119,13 @@ public class CommandMethods {
         }
     }
 
-    public void report(String fileName) {
+    public void report() {
+        File fileName = new File("report");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("MM_dd-hh:mm");
+        String date = formatter.format(LocalDateTime.now());
         List<JPinDatabaseDTO> dtoList = data.queryAllPins ();
-        boolean exported = csv.csvExport (fileName + ".csv", dtoList);
-        if (exported) System.out.println ("Report successfully generated: " + fileName + ".csv");
+        boolean exported = csv.csvExport (fileName+date+".csv", dtoList);
+        if (exported) System.out.println ("Report successfully generated: " + fileName+date + ".csv");
     }
 
     public void importCSVToDatabase(String fileName) {
