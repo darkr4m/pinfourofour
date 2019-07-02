@@ -18,20 +18,17 @@ An internal Pinterest management tool. Designed to automate the process of updat
 - Check Links for their HTTP Response code.
 - Generates Reports on Problem Pins.
 
-**Data is stored in an SQLite database and can be exported to CSV format and can be viewed in any spreadsheet program.**<br>
- This application supports importing data from a CSV file, however there are some specific formatting requirements that should be followed: <br>
- 
- **Column headers are required and must be set in _this_ order:**<br> (not case sensitive)
- PIN_ID, BOARD, LINK, NOTE, LINK_RESPONSE_CODE, LINK_REDIRECT_LOCATION, LINK_REDIRECT_RESPONSE_CODE, ACTION <br>
- 
- **HACK:**(If you need a template)<br>
- Copy and paste the above string into a new text file and save it as .csv.
+
+
 
 ## Configuration
 
 **Configuration file found in  config/pin.config** <br>
 On first and subsequent uses, the application will create and modify subdirectories and files needed for operation. <br>
 _The pin404.jar is meant to stay inside of it's dedicated containing directory. Please keep it there. You can move the directory around as you please._<br>
+
+**Data is stored in an SQLite database and can be exported to CSV format and can be viewed in any spreadsheet program.**<br>
+ This application supports importing data from a CSV file, however there are some specific formatting requirements that should be followed: <br>
 
 ### CSV Hard Requirements
  **Column headers are required and must be set in _this_ order:**<br> (not case sensitive)
