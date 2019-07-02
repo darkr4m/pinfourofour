@@ -242,15 +242,18 @@ public class PinterestIO {
 
     public void saveToDB(ArrayList<Pins> pinList){
         JPinDatabaseDTOCreator creator = new JPinDatabaseDTOCreator();
+        int pins = 0;
         for (Pins pinItems: pinList) {
             for (Pin pin : pinItems) {
                 if (data.queryByPinID(pin.getId()) == null) {
                     JPin jPin = creator.createJPin(pin.getId(), pin.getBoard().getName(), pin.getOriginal_link(), pin.getNote());
                     data.insertPinBasic(jPin);
+                    pins++;
                     if(data.queryByPinID (pin.getId ())==null) data.updatePinAction ("build",pin.getId ());
                 }
             }
         }
+        System.out.println (pins+" new pins added to the database.");
     }
 
     /**<b>toJMap</b>
