@@ -405,7 +405,7 @@ public class Datasource {
             updateAll.setString(7, pinID);
             if(queryByPinID(pinID) != null) {
                 updateAll.execute();
-                System.out.println("Sucessfully changed responses on pin "+pinID+".");
+                System.out.println("Sucessfully updated all fields on pin "+pinID+".");
                 return true;
             }
             System.err.println("The pin with the ID "+pinID+" does not exist in the database.");
