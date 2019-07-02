@@ -17,11 +17,11 @@ import java.util.List;
 import static com.jtv.pinfourofour.models.CSVHeaders.*;
 
 public class CSVService {
-    private static final CSVFormat format = CSVFormat.DEFAULT
+    private static final CSVFormat format = CSVFormat.RFC4180
             .withFirstRecordAsHeader()
             .withIgnoreHeaderCase(true)
             .withAllowMissingColumnNames(true)
-            .withAutoFlush(true).withTrim(true);
+            .withAutoFlush(true);
 
 
     private static Reader readFile(String fileName) {
@@ -60,9 +60,9 @@ public class CSVService {
                 }
             }
             return JPins;
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
             System.out.println("Could not parse the file " + fileName + ": " + e.getMessage());
-            return null;
+            return JPins;
         }
     }
 
@@ -71,7 +71,7 @@ public class CSVService {
      * Exports the JPins from a list obtained from a query result to a CSV file.
      */
     public boolean csvExport(String fileName, List<JPinDatabaseDTO> dtoList) {
-        try (CSVPrinter printer = CSVFormat.DEFAULT.withHeader(CSVHeaders.class)
+        try (CSVPrinter printer = CSVFormat.RFC4180.withHeader(CSVHeaders.class)
                 .withIgnoreHeaderCase(true)
                 .withAllowMissingColumnNames(true)
                 .withAutoFlush(true)
